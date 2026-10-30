@@ -142,8 +142,36 @@ class JwtAuthenticationFilterTest {
         authenticationFilter.doFilterInternal(request, response, filterChain);
 
         assertNull(SecurityContextHolder.getContext().getAuthentication());
-        verify(filterChain).doFilter(request, response);
         verifyNoInteractions(tokenProvider);
         verifyNoInteractions(userRepository);
+    }
+
+    @Test
+    void doFilterInternal_ShouldNotOverwriteExistingAuthentication() throws ServletException, IOException {
+        // Pre-existing authentication in SecurityContext
+        org.springframework.security.core.Authentication existingAuth =
+                new org.springframework.security.authentication.UsernamePasswordAuthenticationToken(
+                        "pre_authenticated_user",
+                        null,
+                        java.util.Collections.emptyList()
+                );
+        SecurityContextHolder.getContext().setAuthentication(existingAuth);
+
+        MockHttpServletRequest request = new MockHttpServletRequest();
+        request.addHeader("Authorization", "Bearer some.jwt.token");
+        MockHttpServletResponse response = new MockHttpServletResponse();
+
+        authenticationFilter.doFilterInternal(request, response, filterChain);
+
+        // Verify existing authentication was preserved and not overwritten
+        assertSame(existingAuth, SecurityContextHolder.getContext().getAuthentication());
+        assertEquals("pre_authenticated_user", SecurityContextHolder.getContext().getAuthentication().getName());
+
+        // Verify token was not parsed and database was not queried
+        verifyNoInteractions(tokenProvider);
+        verifyNoInteractions(userRepository);
+
+        // Verify filter chain continued normally
+        verify(filterChain).doFilter(request, response);
     }
 }
