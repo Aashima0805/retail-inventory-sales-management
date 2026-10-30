@@ -10,15 +10,17 @@ INSERT INTO roles (id, name) VALUES
 (2, 'ROLE_CASHIER'),
 (3, 'ROLE_INVENTORY_STAFF');
 
+-- Synchronize roles sequence to max ID
+SELECT setval(pg_get_serial_sequence('roles', 'id'), COALESCE((SELECT MAX(id) FROM roles), 1));
+
 -- 2. Seed Users
 INSERT INTO users (id, username, password_hash, full_name, role_id, is_active, token_version) VALUES
 (1, 'admin', '$2a$10$stq9/DpJ6a1RPT.srhtshOqbUZTJc38Ii7HjSg12IPVjjuzNA0mGK', 'Store Manager', 1, TRUE, 1),
 (2, 'cashier1', '$2a$10$stq9/DpJ6a1RPT.srhtshOqbUZTJc38Ii7HjSg12IPVjjuzNA0mGK', 'Alice Cashier', 2, TRUE, 1),
 (3, 'inventory1', '$2a$10$stq9/DpJ6a1RPT.srhtshOqbUZTJc38Ii7HjSg12IPVjjuzNA0mGK', 'Bob Stock Keeper', 3, TRUE, 1);
 
--- Reset sequence for users and roles
-SELECT setval('roles_id_seq', (SELECT MAX(id) FROM roles));
-SELECT setval('users_id_seq', (SELECT MAX(id) FROM users));
+-- Synchronize users sequence to max ID
+SELECT setval(pg_get_serial_sequence('users', 'id'), COALESCE((SELECT MAX(id) FROM users), 1));
 
 -- 3. Seed Categories
 INSERT INTO categories (id, name, description) VALUES
@@ -28,7 +30,8 @@ INSERT INTO categories (id, name, description) VALUES
 (4, 'Pantry Staples', 'Rice, flour, sugar, cooking oil, and pulses'),
 (5, 'Snacks & Confectionery', 'Chips, biscuits, chocolate, and sweets');
 
-SELECT setval('categories_id_seq', (SELECT MAX(id) FROM categories));
+-- Synchronize categories sequence to max ID
+SELECT setval(pg_get_serial_sequence('categories', 'id'), COALESCE((SELECT MAX(id) FROM categories), 1));
 
 -- 4. Seed Suppliers
 INSERT INTO suppliers (id, name, contact_person, phone, email, address, is_active) VALUES
@@ -36,7 +39,8 @@ INSERT INTO suppliers (id, name, contact_person, phone, email, address, is_activ
 (2, 'Daily Fresh Dairy Farm', 'Sunita Rao', '+91 98123 45678', 'supply@dailyfreshdairy.in', '45 Green Pastures Road', TRUE),
 (3, 'Heritage Bakery Supplies', 'Michael Fernandes', '+91 97654 32109', 'sales@heritagebakery.com', '88 Old Market Lane', TRUE);
 
-SELECT setval('suppliers_id_seq', (SELECT MAX(id) FROM suppliers));
+-- Synchronize suppliers sequence to max ID
+SELECT setval(pg_get_serial_sequence('suppliers', 'id'), COALESCE((SELECT MAX(id) FROM suppliers), 1));
 
 -- 5. Seed Sample Products
 INSERT INTO products (id, sku, name, description, category_id, price, current_stock, reorder_level, is_active) VALUES
@@ -53,4 +57,5 @@ INSERT INTO products (id, sku, name, description, category_id, price, current_st
 (11, 'SNK-001', 'Salted Potato Chips 50g', 'Crispy kettle-cooked salted chips', 5, 20.00, 60, 20, TRUE),
 (12, 'SNK-002', 'Dark Chocolate Bar 80g', '70% cocoa rich dark chocolate', 5, 95.00, 2, 5, TRUE);
 
-SELECT setval('products_id_seq', (SELECT MAX(id) FROM products));
+-- Synchronize products sequence to max ID
+SELECT setval(pg_get_serial_sequence('products', 'id'), COALESCE((SELECT MAX(id) FROM products), 1));
