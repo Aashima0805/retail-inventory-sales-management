@@ -1,0 +1,32 @@
+/* Angular Material prebuilt theme */
+@import '@angular/material/prebuilt-themes/indigo-pink.css';
+
+/* Global Application Styles */
+html, body {
+  height: 100%;
+  margin: 0;
+  font-family: Roboto, "Helvetica Neue", sans-serif;
+  background-color: #f8fafc;
+  color: #1e293b;
+}
+
+/* Print Stylesheet for POS Receipts */
+@media print {
+  body * {
+    visibility: hidden;
+  }
+  .printable-receipt, .printable-receipt * {
+    visibility: visible;
+  }
+  .printable-receipt {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    margin: 0;
+    padding: 16px;
+  }
+  .no-print {
+    display: none !important;
+  }
+}
