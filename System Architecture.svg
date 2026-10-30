@@ -1,0 +1,160 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1790.8169999999998 987.7" width="1790.8169999999998" height="987.7" style="--bg:#FFFFFF;--fg:#3B3B3B;--line:#3B3B3B;--accent:#005FB8;--muted:#3B3B3BCC;--surface:#F8F8F8;--border:#3B3B3B;background:var(--bg)">
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap');
+  text { font-family: 'Inter', system-ui, sans-serif; }
+  svg {
+    /* Derived from --bg and --fg (overridable via --line, --accent, etc.) */
+    --_text:          var(--fg);
+    --_text-sec:      var(--muted, color-mix(in srgb, var(--fg) 60%, var(--bg)));
+    --_text-muted:    var(--muted, color-mix(in srgb, var(--fg) 40%, var(--bg)));
+    --_text-faint:    color-mix(in srgb, var(--fg) 25%, var(--bg));
+    --_line:          var(--line, color-mix(in srgb, var(--fg) 50%, var(--bg)));
+    --_arrow:         var(--accent, color-mix(in srgb, var(--fg) 85%, var(--bg)));
+    --_node-fill:     var(--surface, color-mix(in srgb, var(--fg) 3%, var(--bg)));
+    --_node-stroke:   var(--border, color-mix(in srgb, var(--fg) 20%, var(--bg)));
+    --_group-fill:    var(--bg);
+    --_group-hdr:     color-mix(in srgb, var(--fg) 5%, var(--bg));
+    --_inner-stroke:  color-mix(in srgb, var(--fg) 12%, var(--bg));
+    --_key-badge:     color-mix(in srgb, var(--fg) 10%, var(--bg));
+  }
+</style>
+<defs>
+  <marker id="arrowhead" markerWidth="8" markerHeight="5" refX="7" refY="2.5" orient="auto">
+    <polygon points="0 0, 8 2.5, 0 5" fill="var(--_arrow)" stroke="var(--_arrow)" stroke-width="0.75" stroke-linejoin="round" />
+  </marker>
+  <marker id="arrowhead-start" markerWidth="8" markerHeight="5" refX="1" refY="2.5" orient="auto-start-reverse">
+    <polygon points="8 0, 0 2.5, 8 5" fill="var(--_arrow)" stroke="var(--_arrow)" stroke-width="0.75" stroke-linejoin="round" />
+  </marker>
+</defs>
+<g class="subgraph" data-id="Client" data-label="Frontend: Angular 17+ (Material Design)">
+  <rect x="40" y="40" width="1710.8169999999998" height="96.9" rx="0" ry="0" fill="var(--_group-fill)" stroke="var(--_node-stroke)" stroke-width="1" />
+  <rect x="40" y="40" width="1710.8169999999998" height="28" rx="0" ry="0" fill="var(--_group-hdr)" stroke="var(--_node-stroke)" stroke-width="1" />
+  <text x="52" y="54" font-size="12" font-weight="600" fill="var(--_text-sec)" dy="4.199999999999999">Frontend: Angular 17+ (Material Design)</text>
+</g>
+<g class="subgraph" data-id="Server" data-label="Backend: Spring Boot 3.x (Java 17/21)">
+  <rect x="194.80050000000006" y="259.20000000000005" width="1401.2159999999997" height="531.6" rx="0" ry="0" fill="var(--_group-fill)" stroke="var(--_node-stroke)" stroke-width="1" />
+  <rect x="194.80050000000006" y="259.20000000000005" width="1401.2159999999997" height="28" rx="0" ry="0" fill="var(--_group-hdr)" stroke="var(--_node-stroke)" stroke-width="1" />
+  <text x="206.80050000000006" y="273.20000000000005" font-size="12" font-weight="600" fill="var(--_text-sec)" dy="4.199999999999999">Backend: Spring Boot 3.x (Java 17/21)</text>
+<g class="subgraph" data-id="Controllers" data-label="REST Controller Layer">
+  <rect x="393.0864999999999" y="388.1" width="1004.644" height="96.9" rx="0" ry="0" fill="var(--_group-fill)" stroke="var(--_node-stroke)" stroke-width="1" />
+  <rect x="393.0864999999999" y="388.1" width="1004.644" height="28" rx="0" ry="0" fill="var(--_group-hdr)" stroke="var(--_node-stroke)" stroke-width="1" />
+  <text x="405.0864999999999" y="402.1" font-size="12" font-weight="600" fill="var(--_text-sec)" dy="4.199999999999999">REST Controller Layer</text>
+</g>
+<g class="subgraph" data-id="Services" data-label="Service Layer (@Transactional)">
+  <rect x="210.80050000000006" y="533" width="1369.2159999999997" height="96.9" rx="0" ry="0" fill="var(--_group-fill)" stroke="var(--_node-stroke)" stroke-width="1" />
+  <rect x="210.80050000000006" y="533" width="1369.2159999999997" height="28" rx="0" ry="0" fill="var(--_group-hdr)" stroke="var(--_node-stroke)" stroke-width="1" />
+  <text x="222.80050000000006" y="547" font-size="12" font-weight="600" fill="var(--_text-sec)" dy="4.199999999999999">Service Layer (@Transactional)</text>
+</g>
+<g class="subgraph" data-id="Repositories" data-label="Repository Layer (Spring Data JPA)">
+  <rect x="656.511" y="677.9000000000001" width="477.79499999999985" height="96.9" rx="0" ry="0" fill="var(--_group-fill)" stroke="var(--_node-stroke)" stroke-width="1" />
+  <rect x="656.511" y="677.9000000000001" width="477.79499999999985" height="28" rx="0" ry="0" fill="var(--_group-hdr)" stroke="var(--_node-stroke)" stroke-width="1" />
+  <text x="668.511" y="691.9000000000001" font-size="12" font-weight="600" fill="var(--_text-sec)" dy="4.199999999999999">Repository Layer (Spring Data JPA)</text>
+</g>
+</g>
+<g class="subgraph" data-id="Database" data-label="Supabase Managed Cloud (PostgreSQL Free Tier)">
+  <rect x="375.0055000000001" y="850.8000000000001" width="707.8009999999997" height="96.9" rx="0" ry="0" fill="var(--_group-fill)" stroke="var(--_node-stroke)" stroke-width="1" />
+  <rect x="375.0055000000001" y="850.8000000000001" width="707.8009999999997" height="28" rx="0" ry="0" fill="var(--_group-hdr)" stroke="var(--_node-stroke)" stroke-width="1" />
+  <text x="387.0055000000001" y="864.8000000000001" font-size="12" font-weight="600" fill="var(--_text-sec)" dy="4.199999999999999">Supabase Managed Cloud (PostgreSQL Free Tier)</text>
+</g>
+<polyline class="edge" data-from="Controllers" data-to="Services" data-style="solid" data-arrow-start="false" data-arrow-end="true" points="700.6079999999998,225.8 700.6079999999998,273.8" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#arrowhead)" />
+<polyline class="edge" data-from="Services" data-to="Repositories" data-style="solid" data-arrow-start="false" data-arrow-end="true" points="700.6079999999998,370.70000000000005 700.6079999999998,418.70000000000005" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#arrowhead)" />
+<polyline class="edge" data-from="Client" data-to="SecFilterChain" data-style="solid" data-arrow-start="false" data-arrow-end="true" data-label="HTTPS / REST API / Bearer Token" points="895.4084999999999,136.9 895.4084999999999,303.20000000000005" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#arrowhead)" />
+<polyline class="edge" data-from="SecFilterChain" data-to="Controllers" data-style="solid" data-arrow-start="false" data-arrow-end="true" points="700.6079999999998,80.9 700.6079999999998,128.9" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#arrowhead)" />
+<polyline class="edge" data-from="Repositories" data-to="PgTables" data-style="solid" data-arrow-start="false" data-arrow-end="true" points="895.4084999999999,774.8000000000001 895.4084999999999,894.8000000000001" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#arrowhead)" />
+<g class="edge-label" data-from="Client" data-to="SecFilterChain" data-label="HTTPS / REST API / Bearer Token">
+  <rect x="804.9084999999999" y="179.9" width="180.406" height="30.3" rx="2" ry="2" fill="var(--bg)" stroke="var(--_inner-stroke)" stroke-width="1" />
+  <text x="895.1114999999999" y="195.05" text-anchor="middle" font-size="11" font-weight="400" fill="var(--_text-sec)" dy="3.8499999999999996">HTTPS / REST API / Bearer Token</text>
+</g>
+<g class="node" data-id="UI_Login" data-label="Login View" data-shape="rectangle">
+  <rect x="411.9759999999999" y="84" width="106.41699999999999" height="36.900000000000006" rx="0" ry="0" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <text x="465.1844999999999" y="102.45" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)" dy="4.55">Login View</text>
+</g>
+<g class="node" data-id="UI_Admin" data-label="Admin Module (Products, Staff, Adjustments, Reports)" data-shape="rectangle">
+  <rect x="808.262" y="84" width="347.24199999999985" height="36.900000000000006" rx="0" ry="0" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <text x="981.8829999999998" y="102.45" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)" dy="4.55">Admin Module (Products, Staff, Adjustments, Reports)</text>
+</g>
+<g class="node" data-id="UI_Cashier" data-label="Cashier Module (POS Counter, Search, Receipts)" data-shape="rectangle">
+  <rect x="56" y="84" width="327.97599999999994" height="36.900000000000006" rx="0" ry="0" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <text x="219.98799999999997" y="102.45" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)" dy="4.55">Cashier Module (POS Counter, Search, Receipts)</text>
+</g>
+<g class="node" data-id="UI_Inventory" data-label="Inventory Module (Stock In, Low Stock Tracker)" data-shape="rectangle">
+  <rect x="1183.504" y="84" width="319.8249999999999" height="36.900000000000006" rx="0" ry="0" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <text x="1343.4164999999998" y="102.45" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)" dy="4.55">Inventory Module (Stock In, Low Stock Tracker)</text>
+</g>
+<g class="node" data-id="AuthGuard" data-label="Angular Auth &amp; Role Guards" data-shape="rectangle">
+  <rect x="1531.3289999999997" y="84" width="203.488" height="36.900000000000006" rx="0" ry="0" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <text x="1633.0729999999996" y="102.45" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)" dy="4.55">Angular Auth &amp; Role Guards</text>
+</g>
+<g class="node" data-id="HttpInterceptor" data-label="JWT Interceptor &amp; Error Handler" data-shape="rectangle">
+  <rect x="546.3929999999999" y="84" width="233.869" height="36.900000000000006" rx="0" ry="0" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <text x="663.3274999999999" y="102.45" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)" dy="4.55">JWT Interceptor &amp; Error Handler</text>
+</g>
+<g class="node" data-id="SecFilterChain" data-label="Spring Security &amp; JWT Filter" data-shape="rectangle">
+  <rect x="791.0709999999999" y="303.20000000000005" width="208.67499999999998" height="36.900000000000006" rx="0" ry="0" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <text x="895.4084999999999" y="321.65000000000003" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)" dy="4.55">Spring Security &amp; JWT Filter</text>
+</g>
+<g class="node" data-id="GlobalEx" data-label="GlobalExceptionHandler (@ControllerAdvice)" data-shape="rectangle">
+  <rect x="1027.7459999999999" y="303.20000000000005" width="305.0049999999999" height="36.900000000000006" rx="0" ry="0" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <text x="1180.2484999999997" y="321.65000000000003" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)" dy="4.55">GlobalExceptionHandler (@ControllerAdvice)</text>
+</g>
+<g class="node" data-id="C_Auth" data-label="AuthController" data-shape="rectangle">
+  <rect x="564.9924999999998" y="432.1" width="127.906" height="36.900000000000006" rx="0" ry="0" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <text x="628.9454999999998" y="450.55" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)" dy="4.55">AuthController</text>
+</g>
+<g class="node" data-id="C_Prod" data-label="ProductController" data-shape="rectangle">
+  <rect x="890.1424999999999" y="432.1" width="148.65400000000002" height="36.900000000000006" rx="0" ry="0" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <text x="964.4694999999999" y="450.55" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)" dy="4.55">ProductController</text>
+</g>
+<g class="node" data-id="C_Sale" data-label="SaleController" data-shape="rectangle">
+  <rect x="409.0864999999999" y="432.1" width="127.906" height="36.900000000000006" rx="0" ry="0" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <text x="473.03949999999986" y="450.55" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)" dy="4.55">SaleController</text>
+</g>
+<g class="node" data-id="C_Stock" data-label="StockController" data-shape="rectangle">
+  <rect x="1066.7965" y="432.1" width="135.316" height="36.900000000000006" rx="0" ry="0" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <text x="1134.4544999999998" y="450.55" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)" dy="4.55">StockController</text>
+</g>
+<g class="node" data-id="C_Supp" data-label="SupplierController" data-shape="rectangle">
+  <rect x="1230.1125" y="432.1" width="151.618" height="36.900000000000006" rx="0" ry="0" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <text x="1305.9215" y="450.55" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)" dy="4.55">SupplierController</text>
+</g>
+<g class="node" data-id="C_Report" data-label="ReportController" data-shape="rectangle">
+  <rect x="720.8984999999999" y="432.1" width="141.24400000000003" height="36.900000000000006" rx="0" ry="0" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <text x="791.5204999999999" y="450.55" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)" dy="4.55">ReportController</text>
+</g>
+<g class="node" data-id="S_Auth" data-label="AuthService &amp; UserDetailsService" data-shape="rectangle">
+  <rect x="534.6115" y="577" width="244.98399999999992" height="36.900000000000006" rx="0" ry="0" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <text x="657.1034999999999" y="595.45" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)" dy="4.55">AuthService &amp; UserDetailsService</text>
+</g>
+<g class="node" data-id="S_Prod" data-label="ProductService" data-shape="rectangle">
+  <rect x="978.3214999999999" y="577" width="136.798" height="36.900000000000006" rx="0" ry="0" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <text x="1046.7205" y="595.45" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)" dy="4.55">ProductService</text>
+</g>
+<g class="node" data-id="S_Sale" data-label="SaleService (Atomic Stock Check &amp; Sale)" data-shape="rectangle">
+  <rect x="226.80050000000006" y="577" width="279.8109999999999" height="36.900000000000006" rx="0" ry="0" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <text x="366.706" y="595.45" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)" dy="4.55">SaleService (Atomic Stock Check &amp; Sale)</text>
+</g>
+<g class="node" data-id="S_Stock" data-label="StockService (Receipt &amp; Adjustment)" data-shape="rectangle">
+  <rect x="1143.1194999999998" y="577" width="253.1349999999999" height="36.900000000000006" rx="0" ry="0" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <text x="1269.6869999999997" y="595.45" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)" dy="4.55">StockService (Receipt &amp; Adjustment)</text>
+</g>
+<g class="node" data-id="S_Supp" data-label="SupplierService" data-shape="rectangle">
+  <rect x="1424.2544999999998" y="577" width="139.762" height="36.900000000000006" rx="0" ry="0" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <text x="1494.1354999999999" y="595.45" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)" dy="4.55">SupplierService</text>
+</g>
+<g class="node" data-id="S_Audit" data-label="AuditLogService" data-shape="rectangle">
+  <rect x="807.5954999999999" y="577" width="142.726" height="36.900000000000006" rx="0" ry="0" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <text x="878.9585" y="595.45" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)" dy="4.55">AuditLogService</text>
+</g>
+<g class="node" data-id="R_All" data-label="ProductRepository, SaleRepository, StockAdjustmentRepository, etc." data-shape="rectangle">
+  <rect x="672.511" y="721.9000000000001" width="445.79499999999985" height="36.900000000000006" rx="0" ry="0" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <text x="895.4084999999999" y="740.3500000000001" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)" dy="4.55">ProductRepository, SaleRepository, StockAdjustmentRepository, etc.</text>
+</g>
+<g class="node" data-id="Flyway" data-label="Flyway Migration Engine (V1__init, V2__seed)" data-shape="rectangle">
+  <rect x="391.0055000000001" y="894.8000000000001" width="305.0049999999999" height="36.900000000000006" rx="0" ry="0" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <text x="543.508" y="913.2500000000001" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)" dy="4.55">Flyway Migration Engine (V1__init, V2__seed)</text>
+</g>
+<g class="node" data-id="PgTables" data-label="Relational Tables with CHECK constraints &amp; Indexes" data-shape="rectangle">
+  <rect x="724.0105" y="894.8000000000001" width="342.7959999999999" height="36.900000000000006" rx="0" ry="0" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <text x="895.4084999999999" y="913.2500000000001" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)" dy="4.55">Relational Tables with CHECK constraints &amp; Indexes</text>
+</g>
+</svg>
