@@ -1,7 +1,7 @@
 -- ==============================================================================
 -- V2: Seed Data for Inventory & Sales Management System
 -- Passwords are all BCrypt-hashed for: "password123"
--- Hash: $2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lhWy
+-- Hash: $2a$10$stq9/DpJ6a1RPT.srhtshOqbUZTJc38Ii7HjSg12IPVjjuzNA0mGK
 -- ==============================================================================
 
 -- 1. Seed Roles
@@ -12,9 +12,9 @@ INSERT INTO roles (id, name) VALUES
 
 -- 2. Seed Users
 INSERT INTO users (id, username, password_hash, full_name, role_id, is_active, token_version) VALUES
-(1, 'admin', '$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lhWy', 'Store Manager', 1, TRUE, 1),
-(2, 'cashier1', '$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lhWy', 'Alice Cashier', 2, TRUE, 1),
-(3, 'inventory1', '$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lhWy', 'Bob Stock Keeper', 3, TRUE, 1);
+(1, 'admin', '$2a$10$stq9/DpJ6a1RPT.srhtshOqbUZTJc38Ii7HjSg12IPVjjuzNA0mGK', 'Store Manager', 1, TRUE, 1),
+(2, 'cashier1', '$2a$10$stq9/DpJ6a1RPT.srhtshOqbUZTJc38Ii7HjSg12IPVjjuzNA0mGK', 'Alice Cashier', 2, TRUE, 1),
+(3, 'inventory1', '$2a$10$stq9/DpJ6a1RPT.srhtshOqbUZTJc38Ii7HjSg12IPVjjuzNA0mGK', 'Bob Stock Keeper', 3, TRUE, 1);
 
 -- Reset sequence for users and roles
 SELECT setval('roles_id_seq', (SELECT MAX(id) FROM roles));
