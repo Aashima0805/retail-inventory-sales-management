@@ -22,10 +22,13 @@ interface NavItem {
 
 const NAV_ITEMS: NavItem[] = [
   { label: 'Admin Dashboard',     icon: 'dashboard',      route: '/admin/dashboard',     roles: ['ROLE_ADMIN', 'ADMIN'] },
+  { label: 'Products & Categories', icon: 'inventory_2',  route: '/admin/products',      roles: ['ROLE_ADMIN', 'ADMIN'] },
+  { label: 'Suppliers',           icon: 'local_shipping', route: '/admin/suppliers',     roles: ['ROLE_ADMIN', 'ADMIN'] },
+  { label: 'Staff Accounts',      icon: 'people',         route: '/admin/staff',         roles: ['ROLE_ADMIN', 'ADMIN'] },
   { label: 'Reports',             icon: 'bar_chart',      route: '/admin/reports',        roles: ['ROLE_ADMIN', 'ADMIN'] },
   { label: 'Audit Logs',          icon: 'history',        route: '/admin/audit-logs',     roles: ['ROLE_ADMIN', 'ADMIN'] },
   { label: 'Cashier Dashboard',   icon: 'point_of_sale',  route: '/cashier/dashboard',    roles: ['ROLE_CASHIER', 'CASHIER'] },
-  { label: 'Inventory Dashboard', icon: 'inventory_2',    route: '/inventory/dashboard',  roles: ['ROLE_INVENTORY_STAFF', 'INVENTORY_STAFF'] },
+  { label: 'Inventory Dashboard', icon: 'move_to_inbox',  route: '/inventory/dashboard',  roles: ['ROLE_INVENTORY_STAFF', 'INVENTORY_STAFF'] },
 ];
 
 @Component({
