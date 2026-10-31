@@ -52,6 +52,19 @@ class GlobalExceptionHandlerTest {
     }
 
     @Test
+    void handleDuplicateResource_ShouldReturn409() {
+        DuplicateResourceException ex =
+                new DuplicateResourceException("Product with SKU 'BEV-001' already exists");
+        ProblemDetail problem = handler.handleDuplicateResource(ex);
+
+        assertEquals(409, problem.getStatus());
+        assertEquals("Conflict", problem.getTitle());
+        assertEquals("Product with SKU 'BEV-001' already exists", problem.getDetail());
+        assertNotNull(problem.getProperties());
+        assertTrue(problem.getProperties().containsKey("timestamp"));
+    }
+
+    @Test
     void handleResponseStatus_ShouldReturn401ForUnauthorized() {
         ResponseStatusException ex =
                 new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid username or password");

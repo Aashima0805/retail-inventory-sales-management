@@ -70,6 +70,21 @@ public class GlobalExceptionHandler {
     }
 
     // -----------------------------------------------------------------------
+    // Duplicate / Conflict (409)
+    // -----------------------------------------------------------------------
+
+    @ExceptionHandler(DuplicateResourceException.class)
+    public ProblemDetail handleDuplicateResource(DuplicateResourceException ex) {
+        logger.warn("Duplicate resource conflict: {}", ex.getMessage());
+        ProblemDetail problem = ProblemDetail.forStatus(HttpStatus.CONFLICT);
+        problem.setTitle("Conflict");
+        problem.setType(URI.create("https://api.retail-inventory.com/errors/conflict"));
+        problem.setDetail(ex.getMessage());
+        problem.setProperty("timestamp", Instant.now().toString());
+        return problem;
+    }
+
+    // -----------------------------------------------------------------------
     // ResponseStatusException (used by AuthService for 401 on bad credentials)
     // -----------------------------------------------------------------------
 
