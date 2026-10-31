@@ -30,4 +30,18 @@ public interface ProductRepository extends JpaRepository<Product, Long>, JpaSpec
     @Lock(LockModeType.PESSIMISTIC_WRITE)
     @Query("SELECT p FROM Product p WHERE p.id = :id")
     Optional<Product> findByIdForUpdate(@Param("id") Long id);
+
+    /**
+     * Returns products ranked by total quantity sold, aggregated in DB.
+     * Result: [productId, sku, name, totalQtySold]
+     */
+    @Query("SELECT p.id, p.sku, p.name, COALESCE(SUM(si.quantity), 0) AS totalSold " +
+           "FROM Product p LEFT JOIN SaleItem si ON si.product.id = p.id " +
+           "GROUP BY p.id, p.sku, p.name " +
+           "ORDER BY totalSold DESC")
+    Page<Object[]> findTopProductsByQuantitySold(Pageable pageable);
+
+    /** All active products for the inventory report page. */
+    @Query("SELECT p FROM Product p WHERE p.isActive = true ORDER BY p.name ASC")
+    Page<Product> findAllActiveForReport(Pageable pageable);
 }
