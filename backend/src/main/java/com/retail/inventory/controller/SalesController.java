@@ -26,7 +26,7 @@ public class SalesController {
         this.salesService = salesService;
     }
 
-    @PostMapping("/checkout")
+    @PostMapping(value = {"", "/checkout"})
     @PreAuthorize("hasAnyRole('ADMIN', 'CASHIER')")
     public ResponseEntity<SaleResponse> checkout(
             @Valid @RequestBody SaleRequest request,

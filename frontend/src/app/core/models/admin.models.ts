@@ -102,7 +102,7 @@ export interface SaleItemResponse {
   productName: string;
   unitPrice: number;
   quantity: number;
-  subtotal: number;
+  lineTotal: number;
 }
 
 export interface SaleResponse {

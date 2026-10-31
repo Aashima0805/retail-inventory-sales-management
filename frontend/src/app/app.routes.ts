@@ -9,6 +9,8 @@ import { StaffManagementComponent } from './features/admin/staff/staff-managemen
 import { ReportsComponent } from './features/admin/reports/reports.component';
 import { AuditLogsComponent } from './features/admin/audit-logs/audit-logs.component';
 import { CashierDashboardComponent } from './features/cashier/cashier-dashboard/cashier-dashboard.component';
+import { PosComponent } from './features/cashier/pos/pos.component';
+import { SalesHistoryComponent } from './features/cashier/sales-history/sales-history.component';
 import { InventoryDashboardComponent } from './features/inventory/inventory-dashboard/inventory-dashboard.component';
 import { UnauthorizedComponent } from './shared/unauthorized/unauthorized.component';
 import { authGuard } from './core/guards/auth.guard';
@@ -84,6 +86,16 @@ export const routes: Routes = [
       {
         path: 'cashier/dashboard',
         component: CashierDashboardComponent,
+        canActivate: [roleGuard(['ROLE_CASHIER', 'CASHIER'])],
+      },
+      {
+        path: 'cashier/pos',
+        component: PosComponent,
+        canActivate: [roleGuard(['ROLE_CASHIER', 'CASHIER'])],
+      },
+      {
+        path: 'cashier/history',
+        component: SalesHistoryComponent,
         canActivate: [roleGuard(['ROLE_CASHIER', 'CASHIER'])],
       },
       {
