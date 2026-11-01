@@ -174,4 +174,25 @@ class InventoryServiceTest {
                 () -> inventoryService.adjustStock(request, userDetails));
         assertEquals(400, ex.getStatusCode().value());
     }
+
+    @Test
+    void getReceiptHistory_ShouldReturnPagedStockReceipts() {
+        StockReceipt receipt = new StockReceipt();
+        receipt.setId(100L);
+        receipt.setReceiptReference("REC-20261101-0001");
+        receipt.setSupplier(supplier);
+        receipt.setReceivedBy(adminUser);
+        receipt.setTotalQuantityReceived(25);
+        receipt.setItems(List.of());
+
+        org.springframework.data.domain.Page<StockReceipt> page = new org.springframework.data.domain.PageImpl<>(List.of(receipt));
+        when(stockReceiptRepository.findByDateRange(any(), any(), any(org.springframework.data.domain.Pageable.class)))
+                .thenReturn(page);
+
+        org.springframework.data.domain.Page<StockReceiptResponse> result = inventoryService.getReceiptHistory(null, null, org.springframework.data.domain.PageRequest.of(0, 10));
+
+        assertNotNull(result);
+        assertEquals(1, result.getTotalElements());
+        assertEquals("REC-20261101-0001", result.getContent().get(0).getReceiptReference());
+    }
 }

@@ -187,6 +187,12 @@ public class InventoryService {
         return productRepository.findLowStockProducts(pageable).map(ProductResponse::fromEntity);
     }
 
+    @Transactional(readOnly = true)
+    public Page<StockReceiptResponse> getReceiptHistory(Instant start, Instant end, Pageable pageable) {
+        return stockReceiptRepository.findByDateRange(start, end, pageable)
+                .map(StockReceiptResponse::fromEntity);
+    }
+
     private String generateReceiptReference() {
         String datePart = DATE_FORMATTER.format(Instant.now());
         for (int i = 0; i < 10; i++) {

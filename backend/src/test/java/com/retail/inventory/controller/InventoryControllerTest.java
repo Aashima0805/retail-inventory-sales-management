@@ -189,4 +189,31 @@ class InventoryControllerTest {
         mockMvc.perform(get("/api/v1/inventory/low-stock"))
                 .andExpect(status().isOk());
     }
+
+    @Test
+    @WithMockUser(roles = "INVENTORY_STAFF")
+    void getReceiptHistory_WhenInventoryStaff_ShouldReturn200() throws Exception {
+        when(inventoryService.getReceiptHistory(any(), any(), any(Pageable.class)))
+                .thenReturn(new PageImpl<>(List.of()));
+
+        mockMvc.perform(get("/api/v1/inventory/receipts"))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    @WithMockUser(roles = "ADMIN")
+    void getReceiptHistory_WhenAdmin_ShouldReturn200() throws Exception {
+        when(inventoryService.getReceiptHistory(any(), any(), any(Pageable.class)))
+                .thenReturn(new PageImpl<>(List.of()));
+
+        mockMvc.perform(get("/api/v1/inventory/receipts"))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    @WithMockUser(roles = "CASHIER")
+    void getReceiptHistory_WhenCashier_ShouldReturn403() throws Exception {
+        mockMvc.perform(get("/api/v1/inventory/receipts"))
+                .andExpect(status().isForbidden());
+    }
 }

@@ -30,7 +30,10 @@ const NAV_ITEMS: NavItem[] = [
   { label: 'Cashier Dashboard',   icon: 'dashboard',      route: '/cashier/dashboard',    roles: ['ROLE_CASHIER', 'CASHIER'] },
   { label: 'Point of Sale',       icon: 'point_of_sale',  route: '/cashier/pos',          roles: ['ROLE_CASHIER', 'CASHIER'] },
   { label: 'My Sales History',    icon: 'receipt_long',   route: '/cashier/history',      roles: ['ROLE_CASHIER', 'CASHIER'] },
-  { label: 'Inventory Dashboard', icon: 'move_to_inbox',  route: '/inventory/dashboard',  roles: ['ROLE_INVENTORY_STAFF', 'INVENTORY_STAFF'] },
+  { label: 'Inventory Dashboard', icon: 'dashboard', route: '/inventory/dashboard', roles: ['ROLE_ADMIN', 'ADMIN', 'ROLE_INVENTORY_STAFF', 'INVENTORY_STAFF'] },
+  { label: 'Stock Levels & Alerts', icon: 'inventory_2', route: '/inventory/stock', roles: ['ROLE_ADMIN', 'ADMIN', 'ROLE_INVENTORY_STAFF', 'INVENTORY_STAFF'] },
+  { label: 'Receive Stock', icon: 'move_to_inbox', route: '/inventory/receive', roles: ['ROLE_ADMIN', 'ADMIN', 'ROLE_INVENTORY_STAFF', 'INVENTORY_STAFF'] },
+  { label: 'Receipt History', icon: 'receipt_long', route: '/inventory/receipts', roles: ['ROLE_ADMIN', 'ADMIN', 'ROLE_INVENTORY_STAFF', 'INVENTORY_STAFF'] },
 ];
 
 @Component({

@@ -12,6 +12,9 @@ import { CashierDashboardComponent } from './features/cashier/cashier-dashboard/
 import { PosComponent } from './features/cashier/pos/pos.component';
 import { SalesHistoryComponent } from './features/cashier/sales-history/sales-history.component';
 import { InventoryDashboardComponent } from './features/inventory/inventory-dashboard/inventory-dashboard.component';
+import { StockListingComponent } from './features/inventory/stock-listing/stock-listing.component';
+import { ReceiveStockComponent } from './features/inventory/receive-stock/receive-stock.component';
+import { ReceiptHistoryComponent } from './features/inventory/receipt-history/receipt-history.component';
 import { UnauthorizedComponent } from './shared/unauthorized/unauthorized.component';
 import { authGuard } from './core/guards/auth.guard';
 import { roleGuard } from './core/guards/role.guard';
@@ -101,7 +104,22 @@ export const routes: Routes = [
       {
         path: 'inventory/dashboard',
         component: InventoryDashboardComponent,
-        canActivate: [roleGuard(['ROLE_INVENTORY_STAFF', 'INVENTORY_STAFF'])],
+        canActivate: [roleGuard(['ROLE_ADMIN', 'ADMIN', 'ROLE_INVENTORY_STAFF', 'INVENTORY_STAFF'])],
+      },
+      {
+        path: 'inventory/stock',
+        component: StockListingComponent,
+        canActivate: [roleGuard(['ROLE_ADMIN', 'ADMIN', 'ROLE_INVENTORY_STAFF', 'INVENTORY_STAFF'])],
+      },
+      {
+        path: 'inventory/receive',
+        component: ReceiveStockComponent,
+        canActivate: [roleGuard(['ROLE_ADMIN', 'ADMIN', 'ROLE_INVENTORY_STAFF', 'INVENTORY_STAFF'])],
+      },
+      {
+        path: 'inventory/receipts',
+        component: ReceiptHistoryComponent,
+        canActivate: [roleGuard(['ROLE_ADMIN', 'ADMIN', 'ROLE_INVENTORY_STAFF', 'INVENTORY_STAFF'])],
       },
       {
         path: 'unauthorized',
