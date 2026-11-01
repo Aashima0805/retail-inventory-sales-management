@@ -73,7 +73,7 @@ import { SaleResponse } from '../../../core/models/admin.models';
                 <tr>
                   <td><code>{{ sale.receiptNumber }}</code></td>
                   <td>{{ sale.saleDate | date:'medium' }}</td>
-                  <td>{{ sale.items?.length ?? 0 }} product(s)</td>
+                  <td>{{ sale.items.length || 0 }} product(s)</td>
                   <td style="text-align: right;"><strong>₹{{ sale.totalAmount | number:'1.2-2' }}</strong></td>
                   <td style="text-align: center;">
                     <button mat-icon-button color="primary" (click)="viewReceipt(sale)" title="View Receipt">

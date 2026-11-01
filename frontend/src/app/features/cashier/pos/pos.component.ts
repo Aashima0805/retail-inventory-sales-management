@@ -233,8 +233,10 @@ import { Product, Category, SaleResponse } from '../../../core/models/admin.mode
                 @if (checkoutLoading()) {
                   <span>Processing Checkout…</span>
                 } @else {
-                  <mat-icon>receipt</mat-icon>
-                  <span>Complete Checkout (₹{{ cartGrandTotal() | number:'1.2-2' }})</span>
+                  <ng-container>
+                    <mat-icon>receipt</mat-icon>
+                    <span>Complete Checkout (₹{{ cartGrandTotal() | number:'1.2-2' }})</span>
+                  </ng-container>
                 }
               </button>
             </div>
