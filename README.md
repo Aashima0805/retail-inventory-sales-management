@@ -7,7 +7,7 @@ A production-grade, full-stack retail management web application built strictly 
 ## 1. Technology Stack
 
 * **Frontend:** Angular 21, TypeScript, HTML5, CSS3, Angular Material & CDK
-* **Backend:** Java 17+, Spring Boot 3.3.5, Spring Security, Spring Data JPA, Hibernate, Flyway, JJWT, Jakarta Validation
+* **Backend:** Java 24, Spring Boot 3.3.5, Spring Security, Spring Data JPA, Hibernate, Flyway, JJWT, Jakarta Validation
 * **Database:** Supabase PostgreSQL (Strict Free Plan) via PostgreSQL JDBC Driver
 * **API Documentation:** OpenAPI 3 / Swagger UI (`springdoc-openapi`)
 * **Build Tools:** Maven 3.9+, Node.js 24+, npm 11+
@@ -79,7 +79,7 @@ KANINI/
 ## 4. Setup and Execution Instructions
 
 ### Prerequisites
-* Java JDK 17, 21, or 24
+* Java JDK 24
 * Apache Maven 3.9+
 * Node.js 20+ & npm 10+
 * Free Supabase Account with a PostgreSQL project
