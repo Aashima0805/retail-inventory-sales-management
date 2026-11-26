@@ -27,12 +27,12 @@ public interface SaleRepository extends JpaRepository<Sale, Long>, JpaSpecificat
     Page<Sale> findByCashierIdAndSaleDateBetween(Long cashierId, Instant start, Instant end, Pageable pageable);
 
     // Sales summary aggregations – executed in DB, no full load into memory
-    @Query("SELECT COALESCE(SUM(s.totalAmount), 0) FROM Sale s WHERE (:start IS NULL OR s.saleDate >= :start) AND (:end IS NULL OR s.saleDate <= :end)")
+    @Query("SELECT COALESCE(SUM(s.totalAmount), 0) FROM Sale s WHERE s.saleDate >= :start AND s.saleDate <= :end")
     BigDecimal sumTotalAmount(@Param("start") Instant start, @Param("end") Instant end);
 
-    @Query("SELECT COUNT(s) FROM Sale s WHERE (:start IS NULL OR s.saleDate >= :start) AND (:end IS NULL OR s.saleDate <= :end)")
+    @Query("SELECT COUNT(s) FROM Sale s WHERE s.saleDate >= :start AND s.saleDate <= :end")
     Long countSales(@Param("start") Instant start, @Param("end") Instant end);
 
-    @Query("SELECT COALESCE(SUM(si.quantity), 0) FROM SaleItem si JOIN si.sale s WHERE (:start IS NULL OR s.saleDate >= :start) AND (:end IS NULL OR s.saleDate <= :end)")
+    @Query("SELECT COALESCE(SUM(si.quantity), 0) FROM SaleItem si JOIN si.sale s WHERE s.saleDate >= :start AND s.saleDate <= :end")
     Long sumItemsSold(@Param("start") Instant start, @Param("end") Instant end);
 }

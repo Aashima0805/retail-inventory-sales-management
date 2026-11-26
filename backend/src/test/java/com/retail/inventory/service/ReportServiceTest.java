@@ -44,9 +44,9 @@ class ReportServiceTest {
 
     @Test
     void getSalesSummary_WithNoDates_ReturnsTotals() {
-        when(saleRepository.sumTotalAmount(null, null)).thenReturn(new BigDecimal("300.00"));
-        when(saleRepository.countSales(null, null)).thenReturn(3L);
-        when(saleRepository.sumItemsSold(null, null)).thenReturn(12L);
+        when(saleRepository.sumTotalAmount(any(), any())).thenReturn(new BigDecimal("300.00"));
+        when(saleRepository.countSales(any(), any())).thenReturn(3L);
+        when(saleRepository.sumItemsSold(any(), any())).thenReturn(12L);
 
         SalesSummaryResponse result = reportService.getSalesSummary(null, null);
 
@@ -75,9 +75,9 @@ class ReportServiceTest {
 
     @Test
     void getSalesSummary_WhenNoSales_ReturnsZeros() {
-        when(saleRepository.sumTotalAmount(null, null)).thenReturn(BigDecimal.ZERO);
-        when(saleRepository.countSales(null, null)).thenReturn(0L);
-        when(saleRepository.sumItemsSold(null, null)).thenReturn(0L);
+        when(saleRepository.sumTotalAmount(any(), any())).thenReturn(BigDecimal.ZERO);
+        when(saleRepository.countSales(any(), any())).thenReturn(0L);
+        when(saleRepository.sumItemsSold(any(), any())).thenReturn(0L);
 
         SalesSummaryResponse result = reportService.getSalesSummary(null, null);
 

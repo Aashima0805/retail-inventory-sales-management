@@ -51,9 +51,11 @@ public class ReportService {
 
     @Transactional(readOnly = true)
     public SalesSummaryResponse getSalesSummary(Instant start, Instant end) {
-        BigDecimal totalAmount = saleRepository.sumTotalAmount(start, end);
-        Long numberOfSales = saleRepository.countSales(start, end);
-        Long totalItemsSold = saleRepository.sumItemsSold(start, end);
+        Instant effectiveStart = start != null ? start : Instant.EPOCH;
+        Instant effectiveEnd = end != null ? end : Instant.parse("2099-12-31T23:59:59Z");
+        BigDecimal totalAmount = saleRepository.sumTotalAmount(effectiveStart, effectiveEnd);
+        Long numberOfSales = saleRepository.countSales(effectiveStart, effectiveEnd);
+        Long totalItemsSold = saleRepository.sumItemsSold(effectiveStart, effectiveEnd);
         long lowStockCount = productRepository.countLowStockProducts();
 
         return new SalesSummaryResponse(
@@ -203,7 +205,23 @@ public class ReportService {
 
     @Transactional(readOnly = true)
     public Page<AuditLogResponse> getAuditLogs(String eventType, Instant start, Instant end, Pageable pageable) {
-        return auditLogRepository.findByFilters(eventType, start, end, pageable)
+        Pageable sorted = pageable.getSort().isSorted() ? pageable
+                : PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(),
+                        Sort.by(Sort.Direction.DESC, "createdAt"));
+        Specification<com.retail.inventory.entity.AuditLog> spec = (root, query, cb) -> {
+            List<Predicate> predicates = new ArrayList<>();
+            if (eventType != null && !eventType.isBlank()) {
+                predicates.add(cb.equal(root.get("eventType"), eventType.trim()));
+            }
+            if (start != null) {
+                predicates.add(cb.greaterThanOrEqualTo(root.get("createdAt"), start));
+            }
+            if (end != null) {
+                predicates.add(cb.lessThanOrEqualTo(root.get("createdAt"), end));
+            }
+            return cb.and(predicates.toArray(new Predicate[0]));
+        };
+        return auditLogRepository.findAll(spec, sorted)
                 .map(AuditLogResponse::fromEntity);
     }
 }
