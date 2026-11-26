@@ -10,7 +10,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatChipsModule } from '@angular/material/chips';
 import { AdminService } from '../../../core/services/admin.service';
-import { Supplier, SupplierRequest } from '../../../core/models/admin.models';
+import { Supplier, SupplierRequest, StockReceiptResponse } from '../../../core/models/admin.models';
 
 @Component({
   selector: 'app-supplier-management',
@@ -160,6 +160,9 @@ import { Supplier, SupplierRequest } from '../../../core/models/admin.models';
                     </span>
                   </td>
                   <td>
+                    <button mat-icon-button color="accent" (click)="viewSupplierReceipts(s)" title="View Stock Receipts">
+                      <mat-icon>receipt_long</mat-icon>
+                    </button>
                     <button mat-icon-button color="primary" (click)="editSupplier(s)" title="Edit Supplier">
                       <mat-icon>edit</mat-icon>
                     </button>
@@ -175,6 +178,61 @@ import { Supplier, SupplierRequest } from '../../../core/models/admin.models';
           </table>
         </div>
       </mat-card>
+
+      <!-- Supplier Stock Receipts Modal -->
+      @if (selectedSupplierForReceipts()) {
+        <div style="position:fixed;inset:0;background:rgba(0,0,0,0.55);display:flex;align-items:center;justify-content:center;z-index:1000;padding:1rem;">
+          <mat-card style="max-width:780px;width:100%;max-height:85vh;overflow-y:auto;padding:1.5rem;border-radius:12px;">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;">
+              <div>
+                <h2 style="margin:0;color:#1a237e;">Stock Receipts — {{ selectedSupplierForReceipts()?.name }}</h2>
+                <small style="color:#64748b;">All incoming stock deliveries from this supplier</small>
+              </div>
+              <button mat-icon-button (click)="closeSupplierReceipts()">
+                <mat-icon>close</mat-icon>
+              </button>
+            </div>
+
+            @if (receiptsLoading()) {
+              <mat-progress-bar mode="indeterminate" class="mb-3"></mat-progress-bar>
+            }
+
+            <div class="table-wrap">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>Receipt Ref</th>
+                    <th>Received Date</th>
+                    <th>Received By</th>
+                    <th style="text-align:right;">Total Units</th>
+                    <th>Notes</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  @if (supplierReceipts().length === 0 && !receiptsLoading()) {
+                    <tr>
+                      <td colspan="5" class="text-center py-4">No stock receipts found for this supplier.</td>
+                    </tr>
+                  }
+                  @for (r of supplierReceipts(); track r.id) {
+                    <tr>
+                      <td><code>{{ r.receiptReference }}</code></td>
+                      <td>{{ r.receivedDate | date:'medium' }}</td>
+                      <td>{{ r.receivedByUsername }}</td>
+                      <td style="text-align:right;"><strong>{{ r.totalQuantityReceived }}</strong></td>
+                      <td>{{ r.notes ?? '-' }}</td>
+                    </tr>
+                  }
+                </tbody>
+              </table>
+            </div>
+
+            <div style="display:flex;justify-content:flex-end;margin-top:1rem;">
+              <button mat-stroked-button (click)="closeSupplierReceipts()">Close</button>
+            </div>
+          </mat-card>
+        </div>
+      }
     </div>
   `,
   styles: [`
@@ -300,6 +358,9 @@ export class SupplierManagementComponent implements OnInit {
 
   readonly showForm = signal(false);
   readonly editingSupplierId = signal<number | null>(null);
+  readonly selectedSupplierForReceipts = signal<Supplier | null>(null);
+  readonly supplierReceipts = signal<StockReceiptResponse[]>([]);
+  readonly receiptsLoading = signal(false);
   supplierForm!: FormGroup;
 
   searchKeyword = '';
@@ -416,6 +477,27 @@ export class SupplierManagementComponent implements OnInit {
         this.showFeedback('Failed to deactivate supplier', 'error');
       },
     });
+  }
+
+  viewSupplierReceipts(supplier: Supplier): void {
+    this.selectedSupplierForReceipts.set(supplier);
+    this.supplierReceipts.set([]);
+    this.receiptsLoading.set(true);
+    this.adminService.getStockMovements('RECEIPTS', { supplierId: supplier.id, page: 0, size: 50 }).subscribe({
+      next: (res) => {
+        this.supplierReceipts.set((res.content as StockReceiptResponse[]) ?? []);
+        this.receiptsLoading.set(false);
+      },
+      error: () => {
+        this.receiptsLoading.set(false);
+        this.showFeedback('Failed to load stock receipts for supplier', 'error');
+      },
+    });
+  }
+
+  closeSupplierReceipts(): void {
+    this.selectedSupplierForReceipts.set(null);
+    this.supplierReceipts.set([]);
   }
 
   private showFeedback(msg: string, type: 'success' | 'error'): void {

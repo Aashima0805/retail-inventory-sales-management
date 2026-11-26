@@ -1,5 +1,5 @@
 import { Component, inject, OnInit, signal } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { CommonModule, DatePipe, DecimalPipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { MatCardModule } from '@angular/material/card';
@@ -10,7 +10,8 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatDividerModule } from '@angular/material/divider';
 import { InventoryService } from '../../../core/services/inventory.service';
-import { StockReceiptResponse } from '../../../core/models/admin.models';
+import { StockReceiptResponse, StockReceiptItemResponse } from '../../../core/models/admin.models';
+import { printStockReceipt } from '../../../core/utils/receipt-print.util';
 
 @Component({
   selector: 'app-receipt-history',
@@ -43,6 +44,13 @@ import { StockReceiptResponse } from '../../../core/models/admin.models';
 
       @if (loading()) {
         <mat-progress-bar mode="indeterminate" class="mb-3"></mat-progress-bar>
+      }
+
+      @if (errorMessage()) {
+        <div class="feedback-banner error" style="display:flex;align-items:center;gap:8px;padding:12px 16px;border-radius:8px;margin-bottom:1rem;background:#fee2e2;color:#b91c1c;border:1px solid #fecaca;">
+          <mat-icon>error</mat-icon>
+          <span>{{ errorMessage() }}</span>
+        </div>
       }
 
       <mat-card class="content-card">
@@ -79,12 +87,12 @@ import { StockReceiptResponse } from '../../../core/models/admin.models';
             <thead>
               <tr>
                 <th>Receipt #</th>
-                <th>Date & Time</th>
+                <th>Date &amp; Time</th>
                 <th>Supplier</th>
                 <th>Received By</th>
                 <th style="text-align: right;">Total Units</th>
                 <th>Notes</th>
-                <th style="text-align: center; width: 100px;">Actions</th>
+                <th style="text-align: center; width: 120px;">Actions</th>
               </tr>
             </thead>
             <tbody>
@@ -104,8 +112,11 @@ import { StockReceiptResponse } from '../../../core/models/admin.models';
                   </td>
                   <td class="notes-col">{{ receipt.notes || '—' }}</td>
                   <td style="text-align: center;">
-                    <button mat-icon-button color="primary" (click)="viewDetails(receipt)" title="View Receipt Details">
+                    <button mat-icon-button color="primary" (click)="viewDetails(receipt)" title="View Details">
                       <mat-icon>visibility</mat-icon>
+                    </button>
+                    <button mat-icon-button color="accent" (click)="downloadPdf(receipt)" title="Download PDF">
+                      <mat-icon>download</mat-icon>
                     </button>
                   </td>
                 </tr>
@@ -115,7 +126,7 @@ import { StockReceiptResponse } from '../../../core/models/admin.models';
         </div>
 
         <!-- Pagination -->
-        @if (totalPages() > 1) {
+        @if (totalPages() > 0) {
           <div class="pagination-bar">
             <span>Page {{ currentPage() + 1 }} of {{ totalPages() }} ({{ totalElements() }} total receipts)</span>
             <div class="page-controls">
@@ -132,8 +143,8 @@ import { StockReceiptResponse } from '../../../core/models/admin.models';
 
       <!-- DETAIL VIEW MODAL -->
       @if (selectedReceipt(); as receipt) {
-        <div class="modal-backdrop">
-          <mat-card class="modal-card">
+        <div class="modal-backdrop" (click)="closeDetails()">
+          <mat-card class="modal-card" (click)="$event.stopPropagation()">
             <div class="modal-header">
               <div>
                 <h2>Stock Receipt Details</h2>
@@ -190,9 +201,9 @@ import { StockReceiptResponse } from '../../../core/models/admin.models';
                         <td><strong>{{ item.productName }}</strong></td>
                         <td><code>{{ item.productSku }}</code></td>
                         <td style="text-align: right; font-weight: 600;">+{{ item.quantityReceived }}</td>
-                        <td style="text-align: right;">₹{{ item.unitCost | number:'1.2-2' }}</td>
+                        <td style="text-align: right;">&#8377;{{ item.unitCost | number:'1.2-2' }}</td>
                         <td style="text-align: right; font-weight: 600;">
-                          ₹{{ (item.quantityReceived * item.unitCost) | number:'1.2-2' }}
+                          &#8377;{{ (item.quantityReceived * item.unitCost) | number:'1.2-2' }}
                         </td>
                       </tr>
                     }
@@ -204,6 +215,9 @@ import { StockReceiptResponse } from '../../../core/models/admin.models';
             <mat-divider></mat-divider>
 
             <div class="modal-footer">
+              <button mat-flat-button color="primary" (click)="downloadPdf(receipt)">
+                <mat-icon>download</mat-icon> Download PDF
+              </button>
               <button mat-stroked-button (click)="closeDetails()">Close</button>
             </div>
           </mat-card>
@@ -293,6 +307,10 @@ import { StockReceiptResponse } from '../../../core/models/admin.models';
       margin-top: 1rem;
       color: #64748b;
       font-size: 0.85rem;
+    }
+    .page-controls {
+      display: flex;
+      gap: 0.25rem;
     }
     .mb-3 {
       margin-bottom: 0.75rem;
@@ -384,14 +402,19 @@ import { StockReceiptResponse } from '../../../core/models/admin.models';
     .modal-footer {
       display: flex;
       justify-content: flex-end;
+      gap: 0.75rem;
       margin-top: 1rem;
+      flex-wrap: wrap;
     }
   `],
 })
 export class ReceiptHistoryComponent implements OnInit {
   private readonly inventoryService = inject(InventoryService);
+  private readonly datePipe = inject(DatePipe);
+  private readonly decimalPipe = inject(DecimalPipe);
 
   readonly loading = signal(false);
+  readonly errorMessage = signal<string | null>(null);
   readonly receipts = signal<StockReceiptResponse[]>([]);
   readonly selectedReceipt = signal<StockReceiptResponse | null>(null);
 
@@ -408,9 +431,10 @@ export class ReceiptHistoryComponent implements OnInit {
 
   loadReceipts(page: number): void {
     this.loading.set(true);
+    this.errorMessage.set(null);
 
-    const startIso = this.startDate ? new Date(this.startDate + 'T00:00:00Z').toISOString() : undefined;
-    const endIso = this.endDate ? new Date(this.endDate + 'T23:59:59Z').toISOString() : undefined;
+    const startIso = this.startDate ? new Date(this.startDate + 'T00:00:00').toISOString() : undefined;
+    const endIso = this.endDate ? new Date(this.endDate + 'T23:59:59').toISOString() : undefined;
 
     this.inventoryService.getReceiptHistory(startIso, endIso, page, 15).subscribe({
       next: (res) => {
@@ -420,8 +444,9 @@ export class ReceiptHistoryComponent implements OnInit {
         this.totalElements.set(res.totalElements ?? 0);
         this.loading.set(false);
       },
-      error: () => {
+      error: (err) => {
         this.loading.set(false);
+        this.errorMessage.set(err?.error?.message || 'Failed to load stock receipt history. Please try again.');
       },
     });
   }
@@ -448,5 +473,9 @@ export class ReceiptHistoryComponent implements OnInit {
 
   closeDetails(): void {
     this.selectedReceipt.set(null);
+  }
+
+  downloadPdf(receipt: StockReceiptResponse): void {
+    printStockReceipt(receipt, this.datePipe, this.decimalPipe);
   }
 }

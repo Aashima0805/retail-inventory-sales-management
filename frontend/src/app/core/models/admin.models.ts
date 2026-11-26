@@ -75,6 +75,7 @@ export interface SalesSummaryResponse {
   totalSalesAmount: number;
   numberOfSales: number;
   totalItemsSold: number;
+  lowStockProductsCount?: number;
 }
 
 export interface TopProductResponse {

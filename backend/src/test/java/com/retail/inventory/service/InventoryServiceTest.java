@@ -186,7 +186,7 @@ class InventoryServiceTest {
         receipt.setItems(List.of());
 
         org.springframework.data.domain.Page<StockReceipt> page = new org.springframework.data.domain.PageImpl<>(List.of(receipt));
-        when(stockReceiptRepository.findByDateRange(any(), any(), any(org.springframework.data.domain.Pageable.class)))
+        when(stockReceiptRepository.findAll(any(org.springframework.data.jpa.domain.Specification.class), any(org.springframework.data.domain.Pageable.class)))
                 .thenReturn(page);
 
         org.springframework.data.domain.Page<StockReceiptResponse> result = inventoryService.getReceiptHistory(null, null, org.springframework.data.domain.PageRequest.of(0, 10));

@@ -19,6 +19,8 @@ import {
   InventoryReportResponse,
   StockReceiptResponse,
   StockAdjustmentResponse,
+  StaffUser,
+  Supplier,
 } from '../../../core/models/admin.models';
 
 @Component({
@@ -68,18 +70,37 @@ import {
                   <span class="kpi-label">Total Units Sold</span>
                   <span class="kpi-num">{{ salesSummary()?.totalItemsSold ?? 0 }}</span>
                 </div>
+                <div class="kpi-box">
+                  <span class="kpi-label">Low-Stock Products</span>
+                  <span class="kpi-num">{{ salesSummary()?.lowStockProductsCount ?? 0 }}</span>
+                </div>
               </div>
 
-              <!-- Date Filter -->
+              <!-- Date, Cashier & Receipt Filters -->
               <div class="filter-bar">
                 <mat-form-field appearance="outline" density="compact">
-                  <mat-label>Start Date (ISO / YYYY-MM-DD)</mat-label>
-                  <input matInput [(ngModel)]="salesStartDate" placeholder="2026-01-01T00:00:00Z" />
+                  <mat-label>Start Date</mat-label>
+                  <input matInput type="date" [(ngModel)]="salesStartDate" />
                 </mat-form-field>
 
                 <mat-form-field appearance="outline" density="compact">
-                  <mat-label>End Date (ISO / YYYY-MM-DD)</mat-label>
-                  <input matInput [(ngModel)]="salesEndDate" placeholder="2026-12-31T23:59:59Z" />
+                  <mat-label>End Date</mat-label>
+                  <input matInput type="date" [(ngModel)]="salesEndDate" />
+                </mat-form-field>
+
+                <mat-form-field appearance="outline" density="compact">
+                  <mat-label>Cashier</mat-label>
+                  <mat-select [(ngModel)]="selectedCashierId">
+                    <mat-option [value]="null">All Cashiers</mat-option>
+                    @for (c of cashiers(); track c.id) {
+                      <mat-option [value]="c.id">{{ c.fullName }} ({{ c.username }})</mat-option>
+                    }
+                  </mat-select>
+                </mat-form-field>
+
+                <mat-form-field appearance="outline" density="compact">
+                  <mat-label>Receipt #</mat-label>
+                  <input matInput [(ngModel)]="receiptNumberFilter" placeholder="e.g. SALE-..." (keyup.enter)="loadSalesData()" />
                 </mat-form-field>
 
                 <button mat-flat-button color="primary" (click)="loadSalesData()">Filter Sales</button>
@@ -202,11 +223,23 @@ import {
           <!-- TAB 4: STOCK MOVEMENTS -->
           <mat-tab label="Stock Movements">
             <div class="tab-body">
-              <div class="toolbar-split">
+              <div class="toolbar-split" style="display:flex;gap:1rem;align-items:center;flex-wrap:wrap;">
                 <mat-button-toggle-group [ngModel]="movementType" (ngModelChange)="onMovementTypeChange($event)">
                   <mat-button-toggle value="RECEIPTS">Incoming Receipts</mat-button-toggle>
                   <mat-button-toggle value="ADJUSTMENTS">Stock Adjustments</mat-button-toggle>
                 </mat-button-toggle-group>
+
+                @if (movementType === 'RECEIPTS') {
+                  <mat-form-field appearance="outline" density="compact" style="min-width:220px;">
+                    <mat-label>Filter by Supplier</mat-label>
+                    <mat-select [(ngModel)]="selectedSupplierId" (selectionChange)="loadMovements()">
+                      <mat-option [value]="null">All Suppliers</mat-option>
+                      @for (sup of suppliers(); track sup.id) {
+                        <mat-option [value]="sup.id">{{ sup.name }}</mat-option>
+                      }
+                    </mat-select>
+                  </mat-form-field>
+                }
               </div>
 
               <!-- Receipts Table -->
@@ -412,8 +445,11 @@ export class ReportsComponent implements OnInit {
   // Sales
   readonly salesSummary = signal<SalesSummaryResponse | null>(null);
   readonly sales = signal<SaleResponse[]>([]);
+  readonly cashiers = signal<StaffUser[]>([]);
   salesStartDate = '';
   salesEndDate = '';
+  selectedCashierId: number | null = null;
+  receiptNumberFilter = '';
 
   // Top Products
   readonly topProducts = signal<TopProductResponse[]>([]);
@@ -425,9 +461,26 @@ export class ReportsComponent implements OnInit {
   movementType: 'RECEIPTS' | 'ADJUSTMENTS' = 'RECEIPTS';
   readonly receipts = signal<StockReceiptResponse[]>([]);
   readonly adjustments = signal<StockAdjustmentResponse[]>([]);
+  readonly suppliers = signal<Supplier[]>([]);
+  selectedSupplierId: number | null = null;
 
   ngOnInit(): void {
     this.loadSalesData();
+    this.loadFilterOptions();
+  }
+
+  private loadFilterOptions(): void {
+    this.adminService.getStaffUsers(0, 100).subscribe({
+      next: (res) => {
+        const users = res.content ?? [];
+        this.cashiers.set(users.filter((u) => u.role === 'ROLE_CASHIER' || u.role === 'ROLE_ADMIN'));
+      },
+      error: () => {},
+    });
+    this.adminService.getSuppliers({ page: 0, size: 200 }).subscribe({
+      next: (res) => this.suppliers.set(res.content ?? []),
+      error: () => {},
+    });
   }
 
   onTabChange(index: number): void {
@@ -441,26 +494,41 @@ export class ReportsComponent implements OnInit {
 
   loadSalesData(): void {
     this.loading.set(true);
-    const start = this.salesStartDate.trim() || undefined;
-    const end = this.salesEndDate.trim() || undefined;
+    const start = this.salesStartDate.trim()
+      ? new Date(this.salesStartDate.trim() + 'T00:00:00').toISOString()
+      : undefined;
+    const end = this.salesEndDate.trim()
+      ? new Date(this.salesEndDate.trim() + 'T23:59:59').toISOString()
+      : undefined;
 
     this.adminService.getSalesSummary(start, end).subscribe({
       next: (summary) => this.salesSummary.set(summary),
       error: () => {},
     });
 
-    this.adminService.getSalesReport({ startDate: start, endDate: end, page: 0, size: 50 }).subscribe({
-      next: (res) => {
-        this.sales.set(res.content ?? []);
-        this.loading.set(false);
-      },
-      error: () => this.loading.set(false),
-    });
+    this.adminService
+      .getSalesReport({
+        startDate: start,
+        endDate: end,
+        cashierId: this.selectedCashierId ?? undefined,
+        receiptNumber: this.receiptNumberFilter.trim() || undefined,
+        page: 0,
+        size: 50,
+      })
+      .subscribe({
+        next: (res) => {
+          this.sales.set(res.content ?? []);
+          this.loading.set(false);
+        },
+        error: () => this.loading.set(false),
+      });
   }
 
   resetSalesFilter(): void {
     this.salesStartDate = '';
     this.salesEndDate = '';
+    this.selectedCashierId = null;
+    this.receiptNumberFilter = '';
     this.loadSalesData();
   }
 
@@ -493,7 +561,13 @@ export class ReportsComponent implements OnInit {
 
   loadMovements(): void {
     this.loading.set(true);
-    this.adminService.getStockMovements(this.movementType, { page: 0, size: 50 }).subscribe({
+    this.adminService
+      .getStockMovements(this.movementType, {
+        supplierId: this.movementType === 'RECEIPTS' ? (this.selectedSupplierId ?? undefined) : undefined,
+        page: 0,
+        size: 50,
+      })
+      .subscribe({
       next: (res) => {
         if (this.movementType === 'RECEIPTS') {
           this.receipts.set((res.content as StockReceiptResponse[]) ?? []);

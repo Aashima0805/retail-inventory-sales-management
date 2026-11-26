@@ -149,6 +149,8 @@ export class AdminService {
   getSalesReport(filter?: {
     startDate?: string;
     endDate?: string;
+    cashierId?: number;
+    receiptNumber?: string;
     page?: number;
     size?: number;
   }): Observable<PageResponse<SaleResponse>> {
@@ -158,6 +160,10 @@ export class AdminService {
 
     if (filter?.startDate) params = params.set('startDate', filter.startDate);
     if (filter?.endDate) params = params.set('endDate', filter.endDate);
+    if (filter?.cashierId !== undefined && filter?.cashierId !== null) {
+      params = params.set('cashierId', filter.cashierId);
+    }
+    if (filter?.receiptNumber) params = params.set('receiptNumber', filter.receiptNumber);
 
     return this.http.get<PageResponse<SaleResponse>>(`${this.apiUrl}/reports/sales`, { params });
   }
@@ -174,7 +180,7 @@ export class AdminService {
 
   getStockMovements(
     type: 'RECEIPTS' | 'ADJUSTMENTS',
-    filter?: { startDate?: string; endDate?: string; page?: number; size?: number }
+    filter?: { startDate?: string; endDate?: string; supplierId?: number; page?: number; size?: number }
   ): Observable<PageResponse<StockReceiptResponse | StockAdjustmentResponse>> {
     let params = new HttpParams()
       .set('type', type)
@@ -183,6 +189,9 @@ export class AdminService {
 
     if (filter?.startDate) params = params.set('startDate', filter.startDate);
     if (filter?.endDate) params = params.set('endDate', filter.endDate);
+    if (filter?.supplierId !== undefined && filter?.supplierId !== null) {
+      params = params.set('supplierId', filter.supplierId);
+    }
 
     return this.http.get<PageResponse<StockReceiptResponse | StockAdjustmentResponse>>(
       `${this.apiUrl}/reports/stock-movements`,

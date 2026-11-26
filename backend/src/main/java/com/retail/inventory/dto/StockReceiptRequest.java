@@ -4,12 +4,15 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 
+import java.time.Instant;
 import java.util.List;
 
 public class StockReceiptRequest {
 
     @NotNull(message = "Supplier ID is required")
     private Long supplierId;
+
+    private Instant receivedDate;
 
     private String notes;
 
@@ -32,6 +35,14 @@ public class StockReceiptRequest {
 
     public void setSupplierId(Long supplierId) {
         this.supplierId = supplierId;
+    }
+
+    public Instant getReceivedDate() {
+        return receivedDate;
+    }
+
+    public void setReceivedDate(Instant receivedDate) {
+        this.receivedDate = receivedDate;
     }
 
     public String getNotes() {

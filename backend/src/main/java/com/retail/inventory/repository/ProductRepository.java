@@ -27,6 +27,9 @@ public interface ProductRepository extends JpaRepository<Product, Long>, JpaSpec
     @Query("SELECT p FROM Product p WHERE p.isActive = true AND p.currentStock <= p.reorderLevel")
     Page<Product> findLowStockProducts(Pageable pageable);
 
+    @Query("SELECT COUNT(p) FROM Product p WHERE p.isActive = true AND p.currentStock <= p.reorderLevel")
+    long countLowStockProducts();
+
     @Lock(LockModeType.PESSIMISTIC_WRITE)
     @Query("SELECT p FROM Product p WHERE p.id = :id")
     Optional<Product> findByIdForUpdate(@Param("id") Long id);

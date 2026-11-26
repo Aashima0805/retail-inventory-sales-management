@@ -2,14 +2,23 @@ package com.retail.inventory.service;
 
 import com.retail.inventory.dto.*;
 import com.retail.inventory.entity.Product;
+import com.retail.inventory.entity.Sale;
+import com.retail.inventory.entity.StockAdjustment;
+import com.retail.inventory.entity.StockReceipt;
 import com.retail.inventory.repository.*;
+import jakarta.persistence.criteria.Predicate;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.time.Instant;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Provides aggregated reporting data for the ADMIN reporting APIs.
@@ -45,16 +54,18 @@ public class ReportService {
         BigDecimal totalAmount = saleRepository.sumTotalAmount(start, end);
         Long numberOfSales = saleRepository.countSales(start, end);
         Long totalItemsSold = saleRepository.sumItemsSold(start, end);
+        long lowStockCount = productRepository.countLowStockProducts();
 
         return new SalesSummaryResponse(
                 totalAmount != null ? totalAmount : BigDecimal.ZERO,
                 numberOfSales != null ? numberOfSales : 0L,
-                totalItemsSold != null ? totalItemsSold : 0L
+                totalItemsSold != null ? totalItemsSold : 0L,
+                lowStockCount
         );
     }
 
     // -----------------------------------------------------------------------
-    // Paginated sales report with optional date filter
+    // Paginated sales report with optional date, cashier, and receipt filters
     // -----------------------------------------------------------------------
 
     @Transactional(readOnly = true)
@@ -64,6 +75,37 @@ public class ReportService {
                     .map(SaleResponse::fromEntity);
         }
         return saleRepository.findAll(pageable).map(SaleResponse::fromEntity);
+    }
+
+    @Transactional(readOnly = true)
+    public Page<SaleResponse> getSalesReport(Instant start, Instant end, Long cashierId, String receiptNumber, Pageable pageable) {
+        if (cashierId == null && (receiptNumber == null || receiptNumber.isBlank())) {
+            return getSalesReport(start, end, pageable);
+        }
+
+        Pageable sorted = pageable.getSort().isSorted() ? pageable
+                : PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(),
+                        Sort.by(Sort.Direction.DESC, "saleDate"));
+
+        Specification<Sale> spec = (root, query, cb) -> {
+            List<Predicate> predicates = new ArrayList<>();
+            if (start != null) {
+                predicates.add(cb.greaterThanOrEqualTo(root.get("saleDate"), start));
+            }
+            if (end != null) {
+                predicates.add(cb.lessThanOrEqualTo(root.get("saleDate"), end));
+            }
+            if (cashierId != null) {
+                predicates.add(cb.equal(root.get("cashier").get("id"), cashierId));
+            }
+            if (receiptNumber != null && !receiptNumber.isBlank()) {
+                predicates.add(cb.like(cb.lower(root.get("receiptNumber")),
+                        "%" + receiptNumber.trim().toLowerCase() + "%"));
+            }
+            return cb.and(predicates.toArray(new Predicate[0]));
+        };
+
+        return saleRepository.findAll(spec, sorted).map(SaleResponse::fromEntity);
     }
 
     // -----------------------------------------------------------------------
@@ -111,13 +153,47 @@ public class ReportService {
 
     @Transactional(readOnly = true)
     public Page<StockReceiptResponse> getStockReceipts(Instant start, Instant end, Pageable pageable) {
-        return stockReceiptRepository.findByDateRange(start, end, pageable)
+        return getStockReceipts(start, end, null, pageable);
+    }
+
+    @Transactional(readOnly = true)
+    public Page<StockReceiptResponse> getStockReceipts(Instant start, Instant end, Long supplierId, Pageable pageable) {
+        Pageable sorted = pageable.getSort().isSorted() ? pageable
+                : PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(),
+                        Sort.by(Sort.Direction.DESC, "receivedDate"));
+        Specification<StockReceipt> spec = (root, query, cb) -> {
+            List<Predicate> predicates = new ArrayList<>();
+            if (start != null) {
+                predicates.add(cb.greaterThanOrEqualTo(root.get("receivedDate"), start));
+            }
+            if (end != null) {
+                predicates.add(cb.lessThanOrEqualTo(root.get("receivedDate"), end));
+            }
+            if (supplierId != null) {
+                predicates.add(cb.equal(root.get("supplier").get("id"), supplierId));
+            }
+            return cb.and(predicates.toArray(new Predicate[0]));
+        };
+        return stockReceiptRepository.findAll(spec, sorted)
                 .map(StockReceiptResponse::fromEntity);
     }
 
     @Transactional(readOnly = true)
     public Page<StockAdjustmentResponse> getStockAdjustments(Instant start, Instant end, Pageable pageable) {
-        return stockAdjustmentRepository.findByDateRange(start, end, pageable)
+        Pageable sorted = pageable.getSort().isSorted() ? pageable
+                : PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(),
+                        Sort.by(Sort.Direction.DESC, "adjustmentDate"));
+        Specification<StockAdjustment> spec = (root, query, cb) -> {
+            List<Predicate> predicates = new ArrayList<>();
+            if (start != null) {
+                predicates.add(cb.greaterThanOrEqualTo(root.get("adjustmentDate"), start));
+            }
+            if (end != null) {
+                predicates.add(cb.lessThanOrEqualTo(root.get("adjustmentDate"), end));
+            }
+            return cb.and(predicates.toArray(new Predicate[0]));
+        };
+        return stockAdjustmentRepository.findAll(spec, sorted)
                 .map(StockAdjustmentResponse::fromEntity);
     }
 

@@ -80,6 +80,11 @@ interface ReceiptDraftItem {
               </mat-select>
             </mat-form-field>
 
+            <mat-form-field appearance="outline" class="flex-1">
+              <mat-label>Received Date *</mat-label>
+              <input matInput type="date" [(ngModel)]="receivedDate" name="receivedDate" required />
+            </mat-form-field>
+
             <mat-form-field appearance="outline" class="flex-3">
               <mat-label>Delivery / Invoice Notes (Optional)</mat-label>
               <input
@@ -555,6 +560,7 @@ export class ReceiveStockComponent implements OnInit {
   readonly confirmedReceipt = signal<StockReceiptResponse | null>(null);
 
   selectedSupplierId: number | null = null;
+  receivedDate: string = new Date().toISOString().split('T')[0];
   notes = '';
   items: ReceiptDraftItem[] = [
     { productId: null, quantityReceived: 1, unitCost: 10.0 },
@@ -626,6 +632,7 @@ export class ReceiveStockComponent implements OnInit {
 
     const payload: StockReceiptRequest = {
       supplierId: this.selectedSupplierId!,
+      receivedDate: this.receivedDate ? new Date(this.receivedDate + 'T00:00:00').toISOString() : undefined,
       notes: this.notes.trim() || undefined,
       items: this.items.map((i) => ({
         productId: i.productId!,

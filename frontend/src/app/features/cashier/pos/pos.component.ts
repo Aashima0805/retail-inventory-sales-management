@@ -1,5 +1,5 @@
 import { Component, inject, OnInit, signal } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { CommonModule, DatePipe, DecimalPipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MatCardModule } from '@angular/material/card';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -14,6 +14,7 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { PosService } from '../../../core/services/pos.service';
 import { AdminService } from '../../../core/services/admin.service';
 import { Product, Category, SaleResponse } from '../../../core/models/admin.models';
+import { printSaleReceipt } from '../../../core/utils/receipt-print.util';
 
 @Component({
   selector: 'app-pos',
@@ -312,6 +313,9 @@ import { Product, Category, SaleResponse } from '../../../core/models/admin.mode
           <div class="modal-buttons no-print">
             <button mat-flat-button color="primary" (click)="printReceipt()">
               <mat-icon>print</mat-icon> Print Receipt
+            </button>
+            <button mat-raised-button color="accent" (click)="downloadPdf()">
+              <mat-icon>picture_as_pdf</mat-icon> Download PDF
             </button>
             <button mat-stroked-button (click)="closeReceipt()">
               <mat-icon>add</mat-icon> Start New Sale
@@ -725,6 +729,8 @@ import { Product, Category, SaleResponse } from '../../../core/models/admin.mode
 export class PosComponent implements OnInit {
   private readonly posService = inject(PosService);
   private readonly adminService = inject(AdminService);
+  private readonly datePipe = inject(DatePipe);
+  private readonly decimalPipe = inject(DecimalPipe);
 
   readonly cart = this.posService.cart;
   readonly cartTotalQuantity = this.posService.cartTotalQuantity;
@@ -823,7 +829,13 @@ export class PosComponent implements OnInit {
   }
 
   printReceipt(): void {
-    window.print();
+    const sale = this.completedSale();
+    if (!sale) return;
+    printSaleReceipt(sale, this.datePipe, this.decimalPipe);
+  }
+
+  downloadPdf(): void {
+    this.printReceipt();
   }
 
   closeReceipt(): void {

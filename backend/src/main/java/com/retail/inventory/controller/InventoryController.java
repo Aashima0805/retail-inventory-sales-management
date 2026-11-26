@@ -39,8 +39,9 @@ public class InventoryController {
     public ResponseEntity<Page<StockReceiptResponse>> getReceiptHistory(
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Instant startDate,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Instant endDate,
+            @RequestParam(required = false) Long supplierId,
             Pageable pageable) {
-        Page<StockReceiptResponse> receipts = inventoryService.getReceiptHistory(startDate, endDate, pageable);
+        Page<StockReceiptResponse> receipts = inventoryService.getReceiptHistory(startDate, endDate, supplierId, pageable);
         return ResponseEntity.ok(receipts);
     }
 

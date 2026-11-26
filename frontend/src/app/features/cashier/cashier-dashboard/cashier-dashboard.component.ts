@@ -1,5 +1,5 @@
 import { Component, inject, OnInit, signal } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { CommonModule, DatePipe, DecimalPipe } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
@@ -8,6 +8,7 @@ import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { AuthService } from '../../../core/services/auth.service';
 import { PosService } from '../../../core/services/pos.service';
 import { SaleResponse } from '../../../core/models/admin.models';
+import { printSaleReceipt } from '../../../core/utils/receipt-print.util';
 
 @Component({
   selector: 'app-cashier-dashboard',
@@ -208,6 +209,9 @@ import { SaleResponse } from '../../../core/models/admin.models';
           <div class="modal-buttons no-print">
             <button mat-flat-button color="primary" (click)="printReceipt()">
               <mat-icon>print</mat-icon> Print Receipt
+            </button>
+            <button mat-raised-button color="accent" (click)="downloadPdf()">
+              <mat-icon>picture_as_pdf</mat-icon> Download PDF
             </button>
             <button mat-stroked-button (click)="closeReceipt()">Close</button>
           </div>
@@ -462,6 +466,8 @@ import { SaleResponse } from '../../../core/models/admin.models';
 export class CashierDashboardComponent implements OnInit {
   private readonly authService = inject(AuthService);
   private readonly posService = inject(PosService);
+  private readonly datePipe = inject(DatePipe);
+  private readonly decimalPipe = inject(DecimalPipe);
 
   readonly currentUser = this.authService.currentUser;
   readonly loading = signal(false);
@@ -500,7 +506,13 @@ export class CashierDashboardComponent implements OnInit {
   }
 
   printReceipt(): void {
-    window.print();
+    const sale = this.selectedSale();
+    if (!sale) return;
+    printSaleReceipt(sale, this.datePipe, this.decimalPipe);
+  }
+
+  downloadPdf(): void {
+    this.printReceipt();
   }
 
   closeReceipt(): void {

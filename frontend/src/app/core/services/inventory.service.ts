@@ -19,6 +19,7 @@ export interface StockReceiptItemRequest {
 
 export interface StockReceiptRequest {
   supplierId: number;
+  receivedDate?: string;
   notes?: string;
   items: StockReceiptItemRequest[];
 }
@@ -55,11 +56,15 @@ export class InventoryService {
     startDate?: string,
     endDate?: string,
     page = 0,
-    size = 15
+    size = 15,
+    supplierId?: number
   ): Observable<PageResponse<StockReceiptResponse>> {
     let params = new HttpParams().set('page', page).set('size', size);
     if (startDate) params = params.set('startDate', startDate);
     if (endDate) params = params.set('endDate', endDate);
+    if (supplierId !== undefined && supplierId !== null) {
+      params = params.set('supplierId', supplierId);
+    }
     return this.http.get<PageResponse<StockReceiptResponse>>(
       `${this.apiUrl}/inventory/receipts`,
       { params }

@@ -4,6 +4,7 @@ import com.retail.inventory.entity.StockReceipt;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
@@ -12,16 +13,18 @@ import java.time.Instant;
 import java.util.Optional;
 
 @Repository
-public interface StockReceiptRepository extends JpaRepository<StockReceipt, Long> {
+public interface StockReceiptRepository extends JpaRepository<StockReceipt, Long>, JpaSpecificationExecutor<StockReceipt> {
 
     Optional<StockReceipt> findByReceiptReference(String receiptReference);
 
     boolean existsByReceiptReference(String receiptReference);
 
-    @Query("SELECT sr FROM StockReceipt sr WHERE " +
+    @Query(value = "SELECT sr FROM StockReceipt sr WHERE " +
            "(:start IS NULL OR sr.receivedDate >= :start) AND " +
-           "(:end IS NULL OR sr.receivedDate <= :end) " +
-           "ORDER BY sr.receivedDate DESC")
+           "(:end IS NULL OR sr.receivedDate <= :end)",
+           countQuery = "SELECT COUNT(sr) FROM StockReceipt sr WHERE " +
+           "(:start IS NULL OR sr.receivedDate >= :start) AND " +
+           "(:end IS NULL OR sr.receivedDate <= :end)")
     Page<StockReceipt> findByDateRange(
             @Param("start") Instant start,
             @Param("end") Instant end,

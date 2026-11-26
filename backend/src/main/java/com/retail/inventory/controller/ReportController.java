@@ -46,8 +46,13 @@ public class ReportController {
     public ResponseEntity<Page<SaleResponse>> getSalesReport(
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Instant startDate,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Instant endDate,
+            @RequestParam(required = false) Long cashierId,
+            @RequestParam(required = false) String receiptNumber,
             Pageable pageable) {
-        return ResponseEntity.ok(reportService.getSalesReport(startDate, endDate, pageable));
+        if (cashierId == null && (receiptNumber == null || receiptNumber.isBlank())) {
+            return ResponseEntity.ok(reportService.getSalesReport(startDate, endDate, pageable));
+        }
+        return ResponseEntity.ok(reportService.getSalesReport(startDate, endDate, cashierId, receiptNumber, pageable));
     }
 
     /**
@@ -79,6 +84,7 @@ public class ReportController {
             @RequestParam(required = false, defaultValue = "RECEIPTS") String type,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Instant startDate,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Instant endDate,
+            @RequestParam(required = false) Long supplierId,
             Pageable pageable) {
 
         if ("ADJUSTMENTS".equalsIgnoreCase(type)) {
@@ -87,8 +93,9 @@ public class ReportController {
             return ResponseEntity.ok(adjustments);
         }
         // Default: RECEIPTS
-        Page<StockReceiptResponse> receipts =
-                reportService.getStockReceipts(startDate, endDate, pageable);
+        Page<StockReceiptResponse> receipts = supplierId == null
+                ? reportService.getStockReceipts(startDate, endDate, pageable)
+                : reportService.getStockReceipts(startDate, endDate, supplierId, pageable);
         return ResponseEntity.ok(receipts);
     }
 }

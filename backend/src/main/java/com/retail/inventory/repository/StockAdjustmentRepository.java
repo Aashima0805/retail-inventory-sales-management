@@ -4,6 +4,7 @@ import com.retail.inventory.entity.StockAdjustment;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
@@ -11,14 +12,16 @@ import org.springframework.stereotype.Repository;
 import java.time.Instant;
 
 @Repository
-public interface StockAdjustmentRepository extends JpaRepository<StockAdjustment, Long> {
+public interface StockAdjustmentRepository extends JpaRepository<StockAdjustment, Long>, JpaSpecificationExecutor<StockAdjustment> {
 
     Page<StockAdjustment> findByProductId(Long productId, Pageable pageable);
 
-    @Query("SELECT sa FROM StockAdjustment sa WHERE " +
+    @Query(value = "SELECT sa FROM StockAdjustment sa WHERE " +
            "(:start IS NULL OR sa.adjustmentDate >= :start) AND " +
-           "(:end IS NULL OR sa.adjustmentDate <= :end) " +
-           "ORDER BY sa.adjustmentDate DESC")
+           "(:end IS NULL OR sa.adjustmentDate <= :end)",
+           countQuery = "SELECT COUNT(sa) FROM StockAdjustment sa WHERE " +
+           "(:start IS NULL OR sa.adjustmentDate >= :start) AND " +
+           "(:end IS NULL OR sa.adjustmentDate <= :end)")
     Page<StockAdjustment> findByDateRange(
             @Param("start") Instant start,
             @Param("end") Instant end,
