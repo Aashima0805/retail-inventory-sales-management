@@ -27,6 +27,7 @@ const NAV_ITEMS: NavItem[] = [
   { label: 'Staff Accounts',      icon: 'people',         route: '/admin/staff',         roles: ['ROLE_ADMIN', 'ADMIN'] },
   { label: 'Reports',             icon: 'bar_chart',      route: '/admin/reports',        roles: ['ROLE_ADMIN', 'ADMIN'] },
   { label: 'Audit Logs',          icon: 'history',        route: '/admin/audit-logs',     roles: ['ROLE_ADMIN', 'ADMIN'] },
+  { label: 'Stock Adjustment',    icon: 'tune',           route: '/admin/stock-adjustment', roles: ['ROLE_ADMIN', 'ADMIN'] },
   { label: 'Cashier Dashboard',   icon: 'dashboard',      route: '/cashier/dashboard',    roles: ['ROLE_CASHIER', 'CASHIER'] },
   { label: 'Point of Sale',       icon: 'point_of_sale',  route: '/cashier/pos',          roles: ['ROLE_CASHIER', 'CASHIER'] },
   { label: 'My Sales History',    icon: 'receipt_long',   route: '/cashier/history',      roles: ['ROLE_CASHIER', 'CASHIER'] },

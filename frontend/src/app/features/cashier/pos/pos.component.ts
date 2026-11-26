@@ -698,6 +698,28 @@ import { Product, Category, SaleResponse } from '../../../core/models/admin.mode
       justify-content: flex-end;
       margin-top: 1.5rem;
     }
+    @media print {
+      * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+      .no-print { display: none !important; }
+      .receipt-backdrop {
+        position: static !important;
+        background: transparent !important;
+        padding: 0 !important;
+        display: block !important;
+        z-index: auto !important;
+      }
+      .receipt-dialog-card {
+        max-width: 100% !important;
+        box-shadow: none !important;
+        padding: 0 !important;
+        border-radius: 0 !important;
+        max-height: none !important;
+        overflow: visible !important;
+      }
+      .dialog-actions-top,
+      .modal-buttons { display: none !important; }
+      .printable-receipt { padding: 0 !important; }
+    }
   `],
 })
 export class PosComponent implements OnInit {

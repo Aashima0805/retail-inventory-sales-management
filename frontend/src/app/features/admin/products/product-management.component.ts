@@ -11,6 +11,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatChipsModule } from '@angular/material/chips';
+import { MatDividerModule } from '@angular/material/divider';
 import { AdminService } from '../../../core/services/admin.service';
 import { Category, Product, ProductRequest, CategoryRequest } from '../../../core/models/admin.models';
 
@@ -31,6 +32,7 @@ import { Category, Product, ProductRequest, CategoryRequest } from '../../../cor
     MatIconModule,
     MatProgressBarModule,
     MatChipsModule,
+    MatDividerModule,
   ],
   template: `
     <div class="page-container">
@@ -204,6 +206,9 @@ import { Category, Product, ProductRequest, CategoryRequest } from '../../../cor
                           </span>
                         </td>
                         <td>
+                          <button mat-icon-button color="accent" (click)="openAdjustmentDialog(p)" title="Adjust Stock (Manual Correction)">
+                            <mat-icon>tune</mat-icon>
+                          </button>
                           <button mat-icon-button color="primary" (click)="editProduct(p)" title="Edit Product">
                             <mat-icon>edit</mat-icon>
                           </button>
@@ -296,6 +301,115 @@ import { Category, Product, ProductRequest, CategoryRequest } from '../../../cor
           </mat-tab>
         </mat-tab-group>
       </mat-card>
+
+      <!-- STOCK ADJUSTMENT MODAL -->
+      @if (adjustingProduct(); as product) {
+        <div class="modal-backdrop">
+          <mat-card class="modal-dialog-card">
+            <div class="modal-header">
+              <div class="header-title-wrap">
+                <mat-icon color="accent" class="modal-title-icon">tune</mat-icon>
+                <div>
+                  <h2>Adjust Stock Level</h2>
+                  <p>Product: <strong>{{ product.name }}</strong> (<code>{{ product.sku }}</code>)</p>
+                </div>
+              </div>
+              <button mat-icon-button (click)="closeAdjustmentDialog()" [disabled]="adjustmentLoading()">
+                <mat-icon>close</mat-icon>
+              </button>
+            </div>
+
+            <mat-divider></mat-divider>
+
+            <div class="modal-body">
+              <div class="stock-overview-box">
+                <div class="stat-col">
+                  <span class="stat-label">Current Stock</span>
+                  <span class="stat-val">{{ product.currentStock }}</span>
+                </div>
+                <div class="stat-col-arrow">
+                  <mat-icon>arrow_forward</mat-icon>
+                </div>
+                <div class="stat-col">
+                  <span class="stat-label">Adjustment</span>
+                  <span class="stat-val" [class.text-green]="adjustmentQuantityChange > 0" [class.text-red]="adjustmentQuantityChange < 0">
+                    {{ adjustmentQuantityChange > 0 ? '+' + adjustmentQuantityChange : adjustmentQuantityChange }}
+                  </span>
+                </div>
+                <div class="stat-col-arrow">
+                  <mat-icon>trending_flat</mat-icon>
+                </div>
+                <div class="stat-col">
+                  <span class="stat-label">New Balance</span>
+                  <span class="stat-val new-balance" [class.text-red]="(product.currentStock + adjustmentQuantityChange) < 0">
+                    {{ product.currentStock + adjustmentQuantityChange }}
+                  </span>
+                </div>
+              </div>
+
+              @if ((product.currentStock + adjustmentQuantityChange) < 0) {
+                <div class="warning-banner">
+                  <mat-icon>error</mat-icon>
+                  <span>Resulting stock cannot be negative. Maximum reduction is {{ product.currentStock }}.</span>
+                </div>
+              }
+
+              <div class="form-group-field">
+                <mat-form-field appearance="outline" class="w-100">
+                  <mat-label>Quantity Change (+/-)</mat-label>
+                  <input
+                    matInput
+                    type="number"
+                    [(ngModel)]="adjustmentQuantityChange"
+                    placeholder="e.g. -5 for damage, +10 for correction"
+                    required
+                  />
+                  <mat-hint>Enter negative number to reduce, positive to increase.</mat-hint>
+                </mat-form-field>
+              </div>
+
+              <div class="quick-reasons-wrap">
+                <span class="quick-reasons-label">Common Reasons:</span>
+                <div class="chips-list">
+                  <button type="button" class="reason-pill" (click)="setReason('Damaged / Broken stock')">Damaged</button>
+                  <button type="button" class="reason-pill" (click)="setReason('Annual inventory audit discrepancy')">Audit Discrepancy</button>
+                  <button type="button" class="reason-pill" (click)="setReason('Stock shrinkage / Lost')">Shrinkage / Loss</button>
+                  <button type="button" class="reason-pill" (click)="setReason('Expired / spoiled goods')">Expired / Spoiled</button>
+                  <button type="button" class="reason-pill" (click)="setReason('Returned to stock')">Returned</button>
+                </div>
+              </div>
+
+              <div class="form-group-field">
+                <mat-form-field appearance="outline" class="w-100">
+                  <mat-label>Adjustment Reason *</mat-label>
+                  <input
+                    matInput
+                    [(ngModel)]="adjustmentReason"
+                    placeholder="Explain why this manual adjustment is being recorded"
+                    maxlength="255"
+                    required
+                  />
+                </mat-form-field>
+              </div>
+            </div>
+
+            <mat-divider></mat-divider>
+
+            <div class="modal-footer">
+              <button mat-button (click)="closeAdjustmentDialog()" [disabled]="adjustmentLoading()">Cancel</button>
+              <button
+                mat-raised-button
+                color="primary"
+                (click)="submitStockAdjustment()"
+                [disabled]="adjustmentLoading() || !isAdjustmentValid()"
+              >
+                <mat-icon>check_circle</mat-icon>
+                {{ adjustmentLoading() ? 'Saving...' : 'Apply Stock Adjustment' }}
+              </button>
+            </div>
+          </mat-card>
+        </div>
+      }
     </div>
   `,
   styles: [`
@@ -413,6 +527,140 @@ import { Category, Product, ProductRequest, CategoryRequest } from '../../../cor
     }
     .feedback-banner.success { background: #dcfce7; color: #166534; border: 1px solid #bbf7d0; }
     .feedback-banner.error { background: #fee2e2; color: #991b1b; border: 1px solid #fecaca; }
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.6);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+      padding: 1rem;
+    }
+    .modal-dialog-card {
+      max-width: 550px;
+      width: 100%;
+      border-radius: 12px;
+      padding: 1.5rem;
+      background: white;
+      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+    }
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 0.75rem;
+    }
+    .header-title-wrap {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+    }
+    .modal-title-icon {
+      font-size: 32px;
+      width: 32px;
+      height: 32px;
+    }
+    .modal-header h2 {
+      margin: 0;
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: #1e293b;
+    }
+    .modal-header p {
+      margin: 2px 0 0;
+      font-size: 0.85rem;
+      color: #64748b;
+    }
+    .modal-body {
+      padding: 1rem 0;
+    }
+    .stock-overview-box {
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 8px;
+      padding: 1rem;
+      margin-bottom: 1.25rem;
+    }
+    .stat-col {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .stat-label {
+      font-size: 0.75rem;
+      color: #64748b;
+      text-transform: uppercase;
+      font-weight: 600;
+    }
+    .stat-val {
+      font-size: 1.4rem;
+      font-weight: 700;
+      color: #1e293b;
+    }
+    .new-balance {
+      color: #1a237e;
+    }
+    .stat-col-arrow mat-icon {
+      color: #94a3b8;
+    }
+    .text-green { color: #16a34a !important; }
+    .text-red { color: #dc2626 !important; }
+    .warning-banner {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: #fee2e2;
+      color: #991b1b;
+      padding: 8px 12px;
+      border-radius: 6px;
+      margin-bottom: 1rem;
+      font-size: 0.85rem;
+    }
+    .form-group-field {
+      margin-bottom: 0.5rem;
+    }
+    .w-100 {
+      width: 100%;
+    }
+    .quick-reasons-wrap {
+      margin-bottom: 1rem;
+    }
+    .quick-reasons-label {
+      font-size: 0.8rem;
+      color: #64748b;
+      display: block;
+      margin-bottom: 6px;
+      font-weight: 500;
+    }
+    .chips-list {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+    .reason-pill {
+      background: #f1f5f9;
+      border: 1px solid #cbd5e1;
+      border-radius: 16px;
+      padding: 4px 10px;
+      font-size: 0.75rem;
+      color: #334155;
+      cursor: pointer;
+      transition: background 0.15s, border-color 0.15s;
+    }
+    .reason-pill:hover {
+      background: #e2e8f0;
+      border-color: #94a3b8;
+    }
+    .modal-footer {
+      display: flex;
+      justify-content: flex-end;
+      gap: 0.75rem;
+      margin-top: 1rem;
+    }
   `],
 })
 export class ProductManagementComponent implements OnInit {
@@ -434,6 +682,12 @@ export class ProductManagementComponent implements OnInit {
   readonly showCategoryForm = signal(false);
   readonly editingCategoryId = signal<number | null>(null);
   categoryForm!: FormGroup;
+
+  // Stock Adjustment state
+  readonly adjustingProduct = signal<Product | null>(null);
+  readonly adjustmentLoading = signal(false);
+  adjustmentQuantityChange = 0;
+  adjustmentReason = '';
 
   // Filters
   searchKeyword = '';
@@ -627,6 +881,61 @@ export class ProductManagementComponent implements OnInit {
         this.showFeedback(detail, 'error');
       },
     });
+  }
+
+  // Stock Adjustment methods
+  openAdjustmentDialog(p: Product): void {
+    this.adjustingProduct.set(p);
+    this.adjustmentQuantityChange = 0;
+    this.adjustmentReason = '';
+  }
+
+  closeAdjustmentDialog(): void {
+    this.adjustingProduct.set(null);
+    this.adjustmentQuantityChange = 0;
+    this.adjustmentReason = '';
+  }
+
+  setReason(reason: string): void {
+    this.adjustmentReason = reason;
+  }
+
+  isAdjustmentValid(): boolean {
+    const prod = this.adjustingProduct();
+    if (!prod) return false;
+    if (!this.adjustmentQuantityChange || this.adjustmentQuantityChange === 0) return false;
+    if ((prod.currentStock + this.adjustmentQuantityChange) < 0) return false;
+    return !!this.adjustmentReason.trim();
+  }
+
+  submitStockAdjustment(): void {
+    const prod = this.adjustingProduct();
+    if (!prod || !this.isAdjustmentValid()) return;
+
+    this.adjustmentLoading.set(true);
+    this.adminService
+      .adjustStock({
+        productId: prod.id,
+        quantityChange: Number(this.adjustmentQuantityChange),
+        reason: this.adjustmentReason.trim(),
+      })
+      .subscribe({
+        next: (res) => {
+          this.adjustmentLoading.set(false);
+          const changeStr = res.quantityChange > 0 ? `+${res.quantityChange}` : `${res.quantityChange}`;
+          this.showFeedback(
+            `Stock adjusted for ${res.productSku}: ${res.previousStock} → ${res.newStock} (${changeStr})`,
+            'success'
+          );
+          this.closeAdjustmentDialog();
+          this.loadProducts();
+        },
+        error: (err) => {
+          this.adjustmentLoading.set(false);
+          const detail = err?.error?.detail ?? err?.error?.message ?? 'Failed to adjust stock';
+          this.showFeedback(detail, 'error');
+        },
+      });
   }
 
   private showFeedback(msg: string, type: 'success' | 'error'): void {

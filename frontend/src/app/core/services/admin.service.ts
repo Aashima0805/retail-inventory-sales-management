@@ -17,6 +17,7 @@ import {
   InventoryReportResponse,
   SaleResponse,
   StockReceiptResponse,
+  StockAdjustmentRequest,
   StockAdjustmentResponse,
   AuditLogResponse,
 } from '../models/admin.models';
@@ -130,6 +131,11 @@ export class AdminService {
 
   activateStaffUser(id: number): Observable<StaffUser> {
     return this.http.patch<StaffUser>(`${this.apiUrl}/users/${id}/activate`, {});
+  }
+
+  // Stock Adjustment (Admin only)
+  adjustStock(req: StockAdjustmentRequest): Observable<StockAdjustmentResponse> {
+    return this.http.post<StockAdjustmentResponse>(`${this.apiUrl}/inventory/adjustments`, req);
   }
 
   // Reports

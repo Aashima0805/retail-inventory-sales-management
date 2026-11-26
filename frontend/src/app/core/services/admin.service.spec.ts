@@ -148,4 +148,16 @@ describe('AdminService', () => {
     expect(req.request.method).toBe('GET');
     req.flush(mockLogs);
   });
+
+  it('adjustStock sends POST to inventory/adjustments', () => {
+    const payload = { productId: 10, quantityChange: -5, reason: 'Damaged' };
+    service.adjustStock(payload).subscribe((res) => {
+      expect(res.newStock).toBe(45);
+    });
+
+    const req = httpTesting.expectOne(`${environment.apiUrl}/inventory/adjustments`);
+    expect(req.request.method).toBe('POST');
+    expect(req.request.body).toEqual(payload);
+    req.flush({ id: 1, productId: 10, previousStock: 50, newStock: 45, quantityChange: -5, reason: 'Damaged' });
+  });
 });

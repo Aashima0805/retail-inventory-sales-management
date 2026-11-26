@@ -348,3 +348,85 @@ CREATE INDEX idx_audit_logs_event_time ON audit_logs(event_type, created_at);
   3. Authoritative unit price and product name are captured directly from the locked entity.
   4. Stock is decremented directly on the locked entity.
 * If any product has insufficient stock or is inactive, an exception is thrown, rolling back the entire transaction.
+
+## 5. Key Design Decisions
+
+The following design decisions were made to ensure security, data consistency, maintainability, and suitability for a small retail environment.
+
+1. **Frontend and Backend Separation:** Angular is used for the frontend, while Spring Boot provides REST APIs. This separation allows the frontend and backend to be developed and maintained independently.
+
+2. **PostgreSQL Database:** Supabase PostgreSQL is used for persistent storage of users, products, suppliers, sales, stock receipts, and audit records.
+
+3. **JWT-Based Authentication:** JSON Web Tokens are used for stateless authentication. Spring Security enforces role-based authorization to restrict access to protected operations.
+
+4. **BCrypt Password Hashing:** Passwords are stored as BCrypt hashes instead of plain-text values to improve account security.
+
+5. **Flyway Database Migrations:** Flyway manages version-controlled database schema creation and initial data seeding, ensuring consistent database setup across environments.
+
+6. **Transactional Stock Management:** Database transactions are used for sales and stock receipt operations to maintain consistency between transaction records and inventory quantities.
+
+7. **Pessimistic Locking:** Product records are locked during checkout to prevent concurrent transactions from selling more stock than is available.
+
+8. **Soft Deactivation:** Products and suppliers are deactivated instead of permanently deleted wherever historical records must be preserved.
+
+9. **Centralized Exception Handling:** A global exception handler provides structured error responses using Spring's ProblemDetail support.
+
+10. **Externalized Configuration:** Database credentials, JWT secrets, server settings, and CORS origins are supplied through environment variables rather than hardcoded production values.
+
+## 6. Assumptions
+
+The system is designed based on the following assumptions:
+
+1. The application is intended for internal use in a small retail shop and does not provide a public customer-facing portal.
+
+2. The system supports three user roles: ADMIN (Manager), CASHIER, and INVENTORY_STAFF.
+
+3. Users must authenticate before accessing protected application features.
+
+4. The ADMIN manages products, categories, suppliers, staff accounts, stock adjustments, and management reports.
+
+5. CASHIER users are responsible for processing sales and accessing their permitted sales and receipt information.
+
+6. INVENTORY_STAFF users are responsible for recording incoming stock and monitoring low-stock products.
+
+7. Product stock changes through incoming stock receipts, completed sales, and authorized stock adjustments.
+
+8. Product prices and available stock maintained by the backend database are treated as the authoritative values during checkout.
+
+9. Historical sales and stock receipt records must remain available even when related products or suppliers are deactivated.
+
+## 7. Known Gaps and Current Limitations
+
+The following items require further verification or enhancement:
+
+1. **Live Workflow Verification:** Although the application has been deployed, all end-to-end workflows, including cashier checkout, receipt generation, stock deduction, and reporting, must be verified in the deployed environment.
+
+2. **Swagger Authentication:** JWT authentication support has been added to the OpenAPI configuration. Its availability and successful execution of protected endpoints must be verified after deployment.
+
+3. **Free-Tier Hosting:** The application uses free-tier hosting services. Backend inactivity may result in delayed responses while the service starts again.
+
+4. **External Backup Management:** A separate automated database backup and recovery strategy has not yet been established as part of the application workflow.
+
+## 8. Possible Future Improvements
+
+The following enhancements may be considered in future versions:
+
+1. **Barcode Scanner Integration:** Support barcode scanning to identify products quickly during checkout and inventory operations.
+
+2. **Automated Low-Stock Notifications:** Introduce automatic notifications when product quantities reach their configured reorder levels.
+
+3. **Advanced Analytics:** Provide additional sales trends, product performance analysis, and inventory movement reports.
+
+4. **Report Export Enhancements:** Support additional export formats for sales, stock receipts, inventory, and audit reports.
+
+5. **Automated Backup and Recovery:** Introduce a documented and automated database backup and recovery strategy.
+
+6. **Performance Monitoring:** Add application performance monitoring and alerting to identify slow API responses and operational issues.
+
+7. **Automated Deployment:** Improve the deployment process through a CI/CD pipeline with automated build and test execution.
+
+---
+
+## 9. Conclusion
+
+The system follows a layered architecture with a clear separation between the frontend, backend, and database. Security controls, transactional inventory operations, database constraints, and audit records are incorporated to support reliable retail operations. The design also allows future enhancements without requiring major changes to the existing architecture.

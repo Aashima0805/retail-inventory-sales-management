@@ -166,7 +166,7 @@ import { SaleResponse } from '../../../core/models/admin.models';
 
           <div class="modal-buttons no-print">
             <button mat-flat-button color="primary" (click)="printReceipt()">
-              <mat-icon>print</mat-icon> Print Receipt
+              <mat-icon>print</mat-icon> Print / Save PDF
             </button>
             <button mat-stroked-button (click)="closeReceipt()">Close</button>
           </div>
@@ -324,6 +324,28 @@ import { SaleResponse } from '../../../core/models/admin.models';
       gap: 0.75rem;
       justify-content: flex-end;
       margin-top: 1.5rem;
+    }
+    @media print {
+      * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+      .no-print { display: none !important; }
+      .receipt-backdrop {
+        position: static !important;
+        background: transparent !important;
+        padding: 0 !important;
+        display: block !important;
+        z-index: auto !important;
+      }
+      .receipt-dialog-card {
+        max-width: 100% !important;
+        box-shadow: none !important;
+        padding: 0 !important;
+        border-radius: 0 !important;
+        max-height: none !important;
+        overflow: visible !important;
+      }
+      .dialog-actions-top,
+      .modal-buttons { display: none !important; }
+      .printable-receipt { padding: 0 !important; }
     }
   `],
 })

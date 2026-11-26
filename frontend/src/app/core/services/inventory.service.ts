@@ -7,6 +7,8 @@ import {
   Product,
   Supplier,
   StockReceiptResponse,
+  StockAdjustmentRequest,
+  StockAdjustmentResponse,
 } from '../models/admin.models';
 
 export interface StockReceiptItemRequest {
@@ -62,6 +64,11 @@ export class InventoryService {
       `${this.apiUrl}/inventory/receipts`,
       { params }
     );
+  }
+
+  /** POST /api/v1/inventory/adjustments — record stock adjustment (Admin only) */
+  adjustStock(request: StockAdjustmentRequest): Observable<StockAdjustmentResponse> {
+    return this.http.post<StockAdjustmentResponse>(`${this.apiUrl}/inventory/adjustments`, request);
   }
 
   /** GET /api/v1/suppliers — for supplier dropdown (reuse admin endpoint) */

@@ -94,4 +94,15 @@ describe('InventoryService', () => {
     expect(req.request.params.get('isActive')).toBe('true');
     req.flush({ content: [], totalElements: 0, totalPages: 0, size: 500, number: 0, first: true, last: true });
   });
+
+  it('adjustStock sends POST with productId, quantityChange and reason', () => {
+    const payload = { productId: 5, quantityChange: 15, reason: 'Restock discrepancy' };
+    service.adjustStock(payload).subscribe((res) => {
+      expect(res.newStock).toBe(65);
+    });
+    const req = httpTesting.expectOne(`${environment.apiUrl}/inventory/adjustments`);
+    expect(req.request.method).toBe('POST');
+    expect(req.request.body).toEqual(payload);
+    req.flush({ id: 1, productId: 5, previousStock: 50, newStock: 65, quantityChange: 15, reason: 'Restock discrepancy' });
+  });
 });

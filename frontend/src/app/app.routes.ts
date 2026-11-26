@@ -8,6 +8,7 @@ import { SupplierManagementComponent } from './features/admin/suppliers/supplier
 import { StaffManagementComponent } from './features/admin/staff/staff-management.component';
 import { ReportsComponent } from './features/admin/reports/reports.component';
 import { AuditLogsComponent } from './features/admin/audit-logs/audit-logs.component';
+import { StockAdjustmentComponent } from './features/admin/stock-adjustment/stock-adjustment.component';
 import { CashierDashboardComponent } from './features/cashier/cashier-dashboard/cashier-dashboard.component';
 import { PosComponent } from './features/cashier/pos/pos.component';
 import { SalesHistoryComponent } from './features/cashier/sales-history/sales-history.component';
@@ -84,6 +85,11 @@ export const routes: Routes = [
       {
         path: 'admin/audit-logs',
         component: AuditLogsComponent,
+        canActivate: [roleGuard(['ROLE_ADMIN', 'ADMIN'])],
+      },
+      {
+        path: 'admin/stock-adjustment',
+        component: StockAdjustmentComponent,
         canActivate: [roleGuard(['ROLE_ADMIN', 'ADMIN'])],
       },
       {

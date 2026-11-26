@@ -139,6 +139,14 @@ import {
           <mat-card-subtitle>System transactions & security audit trail</mat-card-subtitle>
         </mat-card-header>
       </mat-card>
+
+      <mat-card class="module-card" routerLink="/admin/stock-adjustment">
+        <mat-card-header>
+          <mat-icon mat-card-avatar color="warn">tune</mat-icon>
+          <mat-card-title>Stock Adjustment</mat-card-title>
+          <mat-card-subtitle>Correct inventory levels for damage, theft, or discrepancies</mat-card-subtitle>
+        </mat-card-header>
+      </mat-card>
     </div>
 
     <!-- Detailed Insights Grid -->

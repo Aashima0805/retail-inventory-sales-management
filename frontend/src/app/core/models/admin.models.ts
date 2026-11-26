@@ -139,6 +139,12 @@ export interface StockReceiptResponse {
   createdAt: string;
 }
 
+export interface StockAdjustmentRequest {
+  productId: number;
+  quantityChange: number;
+  reason: string;
+}
+
 export interface StockAdjustmentResponse {
   id: number;
   productId: number;
